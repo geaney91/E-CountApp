@@ -11,6 +11,7 @@
 class Count
 {
 public:
+    Count();
     Count(FileWork *f);
 
     void create_candidates();
@@ -23,6 +24,7 @@ public:
     void start_count();
 
     QStringList get_valids();
+    QList<Vote *> get_votes();
 
 private:
     //MainWindow *mw;

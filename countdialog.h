@@ -25,6 +25,8 @@ public:
 private slots:
     void on_votes_list_itemActivated(QListWidgetItem *item);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::CountDialog *ui;
 };

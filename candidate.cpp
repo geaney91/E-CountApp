@@ -10,6 +10,7 @@ Candidate::Candidate(QString n, QString p)
 {
     name = n;
     party = p;
+    votesPerCount.append(0);
 }
 
 QList<int> Candidate::getList()

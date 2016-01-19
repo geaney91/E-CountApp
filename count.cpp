@@ -1,6 +1,12 @@
 #include "count.h"
 #include <QStringList>
+#include <QMessageBox>
 #include "countdialog.h"
+
+Count::Count()
+{
+
+}
 
 Count::Count(FileWork *f)
 {
@@ -34,7 +40,7 @@ void Count::create_candidates()
     {
         candidates.append(new Candidate(names[i], parties[i]));
     }
-    c->set_list(candidates);
+    //c->set_list(candidates);
 }
 
 void Count::create_valid_votes()
@@ -72,14 +78,21 @@ void Count::start_count()
         {
             if (l[j] == "1")
             {
-                //candidates.at(j)
+                candidates[j]->votesPerCount[0]++;
                 break;
             }
         }
     }
+    //c->set_list(candidates);
 }
 
 QStringList Count::get_valids()
 {
     return valids;
 }
+
+QList<Vote *> Count::get_votes()
+{
+    return validVotes;
+}
+

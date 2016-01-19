@@ -2,6 +2,7 @@
 #define VOTE_H
 
 #include <QMainWindow>
+#include <QListWidget>
 
 class Vote
 {
