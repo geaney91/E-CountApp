@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "filework.h"
-#include "count.h"
+#include "stv.h"
 
 namespace Ui {
 class MainWindow;

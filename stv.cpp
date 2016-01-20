@@ -1,14 +1,14 @@
-#include "count.h"
+#include "stv.h"
 #include <QStringList>
 #include <QMessageBox>
 #include "countdialog.h"
 
-Count::Count()
+STV::STV()
 {
 
 }
 
-Count::Count(FileWork *f)
+STV::STV(FileWork *f)
 {
     fileWork = f;
     fileWork->Read();
@@ -19,7 +19,7 @@ Count::Count(FileWork *f)
     c = new CountDialog();
 }
 
-void Count::start()
+void STV::start()
 {
     validate_votes();
     create_candidates();
@@ -27,14 +27,14 @@ void Count::start()
     display_count_info();
 }
 
-void Count::validate_votes()
+void STV::validate_votes()
 {
     Validate *v = new Validate();
     valids = v->remove_invalids(votes, names);
     invalids = v->get_invalids();
 }
 
-void Count::create_candidates()
+void STV::create_candidates()
 {
     for (int i = 0; i < names.size(); i++)
     {
@@ -43,7 +43,7 @@ void Count::create_candidates()
     //c->set_list(candidates);
 }
 
-void Count::create_valid_votes()
+void STV::create_valid_votes()
 {
     for (int i = 0; i < valids.size(); i++)
     {
@@ -54,7 +54,7 @@ void Count::create_valid_votes()
     c->set_list(validVotes);
 }
 
-void Count::display_count_info()
+void STV::display_count_info()
 {
     c->show();
     calculate_quota();
@@ -63,12 +63,12 @@ void Count::display_count_info()
     start_count();
 }
 
-void Count::calculate_quota()
+void STV::calculate_quota()
 {
     quota = (valids.size()/(seats+1))+1;
 }
 
-void Count::start_count()
+void STV::start_count()
 {
     for (int i = 0; i < validVotes.size(); i++)
     {
@@ -86,12 +86,12 @@ void Count::start_count()
     //c->set_list(candidates);
 }
 
-QStringList Count::get_valids()
+QStringList STV::get_valids()
 {
     return valids;
 }
 
-QList<Vote *> Count::get_votes()
+QList<Vote *> STV::get_votes()
 {
     return validVotes;
 }

@@ -14,22 +14,24 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    count.cpp \
     validate.cpp \
     filework.cpp \
     candidate.cpp \
     countdialog.cpp \
     vote.cpp \
-    votelistitem.cpp
+    votelistitem.cpp \
+    trackvote.cpp \
+    stv.cpp
 
 HEADERS  += mainwindow.h \
-    count.h \
     validate.h \
     filework.h \
     candidate.h \
     countdialog.h \
     vote.h \
-    votelistitem.h
+    votelistitem.h \
+    trackvote.h \
+    stv.h
 
 FORMS    += mainwindow.ui \
     countdialog.ui

@@ -1,6 +1,6 @@
 #include "countdialog.h"
 #include "ui_countdialog.h"
-#include "count.h"
+#include "stv.h"
 #include "votelistitem.h"
 
 CountDialog::CountDialog(QWidget *parent) :

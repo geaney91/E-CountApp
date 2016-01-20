@@ -33,7 +33,7 @@ void MainWindow::on_chooseFileBtn_clicked()
 
 void MainWindow::on_countBtn_clicked()
 {
-    Count *c = new Count(fileWork);
+    STV *c = new STV(fileWork);
     c->start();
     this->hide();
 }

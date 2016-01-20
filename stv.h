@@ -1,5 +1,5 @@
-#ifndef COUNT_H
-#define COUNT_H
+#ifndef STV_H
+#define STV_H
 
 #include <QMainWindow>
 #include "mainwindow.h"
@@ -8,11 +8,11 @@
 #include "validate.h"
 #include "countdialog.h"
 
-class Count
+class STV
 {
 public:
-    Count();
-    Count(FileWork *f);
+    STV();
+    STV(FileWork *f);
 
     void create_candidates();
     void create_votes();
@@ -52,4 +52,4 @@ signals:
 public slots:
 };
 
-#endif // COUNT_H
+#endif // STV_H
