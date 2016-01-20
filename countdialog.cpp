@@ -1,6 +1,7 @@
 #include "countdialog.h"
 #include "ui_countdialog.h"
 #include "count.h"
+#include "votelistitem.h"
 
 CountDialog::CountDialog(QWidget *parent) :
     QDialog(parent),
@@ -42,10 +43,16 @@ void CountDialog::set_list(QList<Vote *> votes)
     for (int i = 0; i < size; i++)
     {
         Vote *v = votes[i];
-        new QListWidgetItem(QString::number(v->get_id()), ui->votes_list);
+
+        //QString::number(v->get_id()), ui->votes_list
+        //QListWidgetItem* item;// = new QListWidgetItem();
+        //item->setData(Qt::UserRole, QVariant::fromValue(votes[i]));
+        //item->setText(QString::number(votes[i]->get_id()));
+        VoteListItem *item = new VoteListItem(v);
+        item->setText(QString::number(v->get_id()));
+        ui->votes_list->addItem(item);
     }
 }
-
 
 void CountDialog::set_count_info(int total, int valid, int invalid, int quota, int seats)
 {
@@ -56,9 +63,11 @@ void CountDialog::set_count_info(int total, int valid, int invalid, int quota, i
     ui->no_of_seats_lbl2->setText(QString::number(seats));
 }
 
-void CountDialog::on_votes_list_itemActivated(QListWidgetItem *item)
+void CountDialog::on_votes_list_itemActivated(QListWidgetItem* item)
 {
-    Count *c = new Count();
+    VoteListItem *v1 = static_cast<VoteListItem*>(item);
+    ui->label_4->setText(v1->getRoute());
+    /*Count *c = new Count();
     QList<Vote *> vs = c->get_votes();
     for (int i = 0; i < vs.size(); i++)
     {
@@ -67,7 +76,12 @@ void CountDialog::on_votes_list_itemActivated(QListWidgetItem *item)
             ui->label_4->setText(vs[i]->get_route());
             break;
         }
-    }
+    }*/
+
+    //QObject* obj = qvariant_cast<QObject*>(item->data(Qt::UserRole));
+    //Vote* vote = qobject_cast<Vote*>(obj);
+    //Vote* vote = item->data(Qt::UserRole).value<Vote*>();
+    //ui->label_4->setText(vote->get_route());
 }
 
 void CountDialog::on_pushButton_clicked()

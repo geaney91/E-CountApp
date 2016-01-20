@@ -49,7 +49,7 @@ void Count::create_valid_votes()
     {
         QString l = valids[i];
         QStringList prefs = l.split(",");
-        validVotes.append(new Vote(i+1, "", prefs));
+        validVotes.append(new Vote(i+1, "Route", prefs));
     }
     c->set_list(validVotes);
 }

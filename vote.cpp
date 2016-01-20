@@ -5,6 +5,17 @@ Vote::Vote()
 
 }
 
+Vote::~Vote()
+{
+    delete this;
+}
+
+/*Vote::Vote(const Vote &obj)
+{
+    ptr = new int;
+    *ptr = *obj.ptr;
+}*/
+
 Vote::Vote(int id, QString route, QStringList preferences)
 {
     this->id = id;

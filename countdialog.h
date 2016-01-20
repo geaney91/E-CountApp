@@ -29,6 +29,7 @@ private slots:
 
 private:
     Ui::CountDialog *ui;
+    QVariant *q;
 };
 
 #endif // COUNTDIALOG_H

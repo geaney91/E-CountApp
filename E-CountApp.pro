@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     filework.cpp \
     candidate.cpp \
     countdialog.cpp \
-    vote.cpp
+    vote.cpp \
+    votelistitem.cpp
 
 HEADERS  += mainwindow.h \
     count.h \
@@ -27,7 +28,8 @@ HEADERS  += mainwindow.h \
     filework.h \
     candidate.h \
     countdialog.h \
-    vote.h
+    vote.h \
+    votelistitem.h
 
 FORMS    += mainwindow.ui \
     countdialog.ui
