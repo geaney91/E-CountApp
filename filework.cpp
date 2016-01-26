@@ -32,6 +32,10 @@ void FileWork::Open(QWidget *q)
         QFileInfo file(fileName);
         QString f = file.fileName();
     }
+    else
+    {
+        QMessageBox::information(0, "Error", "File is empty. Exiting application.");
+    }
 
 }
 

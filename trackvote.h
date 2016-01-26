@@ -9,7 +9,8 @@ class TrackVote
 {
 public:
     TrackVote();
-    QString add_route_string(Vote *v, Candidate *c);
+    static QString add_assignment_route_string(Candidate *c);
+    static QString add_transferred_route_string(Candidate *c);
 
 private:
 

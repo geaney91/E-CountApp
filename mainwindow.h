@@ -25,6 +25,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     FileWork *fileWork;
+    //QProgressDialog *progressDialog;
 };
 
 #endif // MAINWINDOW_H

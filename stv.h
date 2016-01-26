@@ -7,39 +7,42 @@
 #include "vote.h"
 #include "validate.h"
 #include "countdialog.h"
+#include <QSplashScreen>
+#include <QThread>
+#include <QProgressDialog>
 
-class STV
+class STV : public QThread
 {
 public:
     STV();
     STV(FileWork *f);
 
-    void create_candidates();
-    void create_votes();
-    void create_valid_votes();
-    void validate_votes();
     void start();
-    void display_count_info();
-    void calculate_quota();
-    void start_count();
 
     QStringList get_valids();
     QList<Vote *> get_votes();
+    void run();
 
 private:
     //MainWindow *mw;
-    CountDialog *c;
+    CountDialog *countDialog;
     FileWork *fileWork;
 
     QList<Candidate *> candidates;
     QList<Vote *> validVotes;
-    //QList<Vote> invalidVotes;
+    QList<Vote *> nonTransferableVotes;
     QList<Candidate *> elected;
     QList<Candidate *> eliminated;
     QList<Candidate *> active;
 
+    void display_static_count_info();
+    void calculate_quota();
+    void start_count();
+    void check_for_elected();
+
     int seats;
     int quota;
+    int countNumber;
     QStringList votes;
     QStringList valids;
     QStringList invalids;
@@ -50,6 +53,13 @@ private:
 signals:
 
 public slots:
+    void validate_votes();
+    void create_candidates();
+    void create_valid_votes();
+    void display_dynamic_count_info();
+    void continue_count();
+    void surplus_distribution(QList<int> surpluses);
+    void excluding_candidates();
 };
 
 #endif // STV_H

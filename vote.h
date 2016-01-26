@@ -15,6 +15,7 @@ public:
     Vote(int id, QString route, QStringList preferences);
     int get_id();
     QString get_route();
+    void set_route(QString r);
     QStringList get_preferences();
 
 private:

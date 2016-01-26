@@ -8,15 +8,19 @@ class Candidate
 public:
     Candidate();
     Candidate(QString n, QString p);
-    QList<int> getList();
-    QString getName();
-    QString getParty();
+    QList<int> getVotesPerCount();
+    QString get_Name();
+    QString get_Party();
+    int get_surplus();
+    void set_surplus(int s);
+    void increment_votes(int num);
 
-    QList<int> votesPerCount;
 
 private:
+    QList<int> votesPerCount;
     QString name;
     QString party;
+    int surplus;
 
 signals:
 

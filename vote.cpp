@@ -33,6 +33,11 @@ QString Vote::get_route()
     return route;
 }
 
+void Vote::set_route(QString r)
+{
+    route = r;
+}
+
 QStringList Vote::get_preferences()
 {
     return preferences;

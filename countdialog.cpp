@@ -2,12 +2,14 @@
 #include "ui_countdialog.h"
 #include "stv.h"
 #include "votelistitem.h"
+#include <QProgressDialog>
 
 CountDialog::CountDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CountDialog)
 {
     ui->setupUi(this);
+    //progressDialog = new QProgressDialog("Counting...", "Abort", 0, INT_MAX, this);
 }
 
 CountDialog::~CountDialog()
@@ -31,7 +33,7 @@ void CountDialog::set_list(QList<Candidate *> c)
         Candidate *l = c[i];
         //QString name = l->getName();
         //new QListWidgetItem(name, ui->excluded_list);
-        QString name = QString::number(l->votesPerCount[0]);
+        QString name = QString::number(l->getVotesPerCount().at(0));
         new QListWidgetItem(name, ui->excluded_list);
     }
 }
@@ -54,7 +56,7 @@ void CountDialog::set_list(QList<Vote *> votes)
     }
 }
 
-void CountDialog::set_count_info(int total, int valid, int invalid, int quota, int seats)
+void CountDialog::set_static_count_info(int total, int valid, int invalid, int quota, int seats)
 {
     ui->total_poll_lbl2->setText(QString::number(total));
     ui->valid_poll_lbl2->setText(QString::number(valid));
@@ -63,25 +65,52 @@ void CountDialog::set_count_info(int total, int valid, int invalid, int quota, i
     ui->no_of_seats_lbl2->setText(QString::number(seats));
 }
 
+void CountDialog::set_count_info(Count *count)
+{
+    ui->results_lbl->setText("Results after Count " + QString::number(count->get_countNumber()));
+
+    QList<Candidate *> temp = count->get_elected();
+    add_info_to_lists(count->get_elected(), ui->elected_list);
+
+    temp = count->get_eliminated();
+    add_info_to_lists(temp, ui->excluded_list);
+
+    temp = count->get_active();
+    add_info_to_lists(temp, ui->candidates_list);
+
+    int number_of_votes = 0;
+    for (int i = 0; i < temp.size(); i++)
+    {
+        number_of_votes = temp[i]->getVotesPerCount().at(count->get_countNumber()-1);
+        new QListWidgetItem(QString::number(number_of_votes), ui->votes_count_list);
+    }
+}
+
+void CountDialog::add_info_to_lists(QList<Candidate *> temp, QListWidget *lw)
+{
+    int size = temp.size();
+    QString name = "";
+    for (int i = 0; i < size; i++)
+    {
+        name = temp[i]->get_Name();
+        new QListWidgetItem(name, lw);
+    }
+}
+
+void CountDialog::set_candidates(QList<Candidate *> c)
+{
+
+}
+
+void CountDialog::disable_continue_button()
+{
+    ui->continue_btn->setEnabled(false);
+}
+
 void CountDialog::on_votes_list_itemActivated(QListWidgetItem* item)
 {
     VoteListItem *v1 = static_cast<VoteListItem*>(item);
     ui->label_4->setText(v1->getRoute());
-    /*Count *c = new Count();
-    QList<Vote *> vs = c->get_votes();
-    for (int i = 0; i < vs.size(); i++)
-    {
-        if (item->text() == QString::number(vs[i]->get_id()))
-        {
-            ui->label_4->setText(vs[i]->get_route());
-            break;
-        }
-    }*/
-
-    //QObject* obj = qvariant_cast<QObject*>(item->data(Qt::UserRole));
-    //Vote* vote = qobject_cast<Vote*>(obj);
-    //Vote* vote = item->data(Qt::UserRole).value<Vote*>();
-    //ui->label_4->setText(vote->get_route());
 }
 
 void CountDialog::on_pushButton_clicked()
@@ -89,3 +118,12 @@ void CountDialog::on_pushButton_clicked()
 
 }
 
+void CountDialog::display_progress()
+{
+
+}
+
+QPushButton* CountDialog::get_button()
+{
+    return ui->continue_btn;
+}
