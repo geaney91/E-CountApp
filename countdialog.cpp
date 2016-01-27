@@ -75,7 +75,7 @@ void CountDialog::set_count_info(Count *count)
     temp = count->get_eliminated();
     add_info_to_lists(temp, ui->excluded_list);
 
-    temp = count->get_active();
+    temp = count->get_candidates();
     add_info_to_lists(temp, ui->candidates_list);
 
     int number_of_votes = 0;

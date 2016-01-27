@@ -58,7 +58,8 @@ public slots:
     void create_valid_votes();
     void display_dynamic_count_info();
     void continue_count();
-    void surplus_distribution(QList<int> surpluses);
+    void surplus_distribution(int count);
+    void check_surplus_type(Candidate *c);
     void excluding_candidates();
 };
 

@@ -112,19 +112,18 @@ void STV::start_count()
         {
             if (l[j] == "1")
             {
-                candidates[j]->increment_votes(countNumber-1);
+                candidates[j]->increment_votes(countNumber-1, v);
                 v->set_route(TrackVote::add_assignment_route_string(candidates[j]));
                 break;
             }
         }
 
     }
-    active = candidates;
+    //active = candidates;
 
     while (elected.size() < seats)
     {
         display_dynamic_count_info();
-
     }
     //connect(countDialog->get_button(), SIGNAL (clicked()), this, SLOT (continue_count()));
 }
@@ -144,34 +143,77 @@ void STV::continue_count()
 void STV::check_for_elected()
 {
     bool check = false;
-    QList<int> surpluses;
+    int count = 0;
+    //QList<int> surpluses;
     for (int i = 0; i < candidates.size(); i++)
     {
         if (candidates[i]->getVotesPerCount().at(countNumber-1) >= quota)
         {
             check = true;
             elected.append(candidates[i]);
-            active.removeAt(i);
+            //active.removeAt(i);
+            candidates[i]->set_status(false);
             int surplus = candidates[i]->getVotesPerCount().at(countNumber-1) - quota;
             candidates[i]->set_surplus(surplus);
-            surpluses.append(surplus);
+            count++;
+            //surpluses.append(surplus);
             //surpluses.append(candidates[i]->get_surplus());
         }
-        else
-            surpluses.append(0);
+        else{}
+            //surpluses.append(-1);
     }
     if(check)
-        surplus_distribution(surpluses);
+        surplus_distribution(count/*surpluses*/);
     else
         excluding_candidates();
 }
 
-void STV::surplus_distribution(QList<int> surpluses)
+void STV::surplus_distribution(int count/*QList<int> surpluses*/)
 {
     //QList<int> surpluses;
-    for (int i = 0; i < surpluses.size(); i++)
+    if (count == 1)
     {
+        for (int i = 0; i < candidates.size(); i++)
+        {
+            if (candidates[i]->get_surplus() != 0)
+            {
+                check_surplus_type(candidates[i]);
+                break;
+            }
+        }
+    }
+    else if (count > 1)
+    {
+        int surplus = 0;
+        int total_surplus = 0;
+        for (int i = 0; i < candidates.size(); i++)
+        {
+            if (candidates[i]->get_surplus() != 0)
+            {
+                surplus = candidates[i]->get_surplus();
+            }
+        }
+    }
 
+}
+
+void STV::check_surplus_type(Candidate *c)
+{
+    int surplus = c->get_surplus();
+    int size = c->getVotesPerCount().at(countNumber-1).size();
+    for (int i = 0; i < size; i++)
+    {
+        bool check = false;
+        Vote *v = c->getVotesPerCount().at(countNumber-1)[i];
+        QStringList l = v->get_preferences();
+        for (int j = 0; j < l.size(); j++)
+        {
+            if (l[j] == countNumber+1)// && candidates[j]->get_status())
+            {
+                check = true;
+            }
+        }
+        if (!check)
     }
 }
 

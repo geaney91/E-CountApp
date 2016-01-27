@@ -2,25 +2,29 @@
 #define CANDIDATE_H
 
 #include <QMainWindow>
+#include "vote.h"
 
 class Candidate
 {
 public:
     Candidate();
     Candidate(QString n, QString p);
-    QList<int> getVotesPerCount();
+    QList<QList<Vote *>> getVotesPerCount();
     QString get_Name();
     QString get_Party();
     int get_surplus();
     void set_surplus(int s);
-    void increment_votes(int num);
+    bool get_status();
+    void set_status(bool set);
+    void increment_votes(int countNum, Vote *v);
 
 
 private:
-    QList<int> votesPerCount;
+    QList<QList<Vote *>> votesPerCount;
     QString name;
     QString party;
     int surplus;
+    bool active;
 
 signals:
 
