@@ -21,6 +21,7 @@ public:
 
 private:
     QList<QList<Vote *>> votesPerCount;
+    QList<Vote *> votes;
     QString name;
     QString party;
     int surplus;

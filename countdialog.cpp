@@ -33,7 +33,7 @@ void CountDialog::set_list(QList<Candidate *> c)
         Candidate *l = c[i];
         //QString name = l->getName();
         //new QListWidgetItem(name, ui->excluded_list);
-        QString name = QString::number(l->getVotesPerCount().at(0));
+        QString name = QString::number(l->getVotesPerCount()[i].size());
         new QListWidgetItem(name, ui->excluded_list);
     }
 }
@@ -81,7 +81,7 @@ void CountDialog::set_count_info(Count *count)
     int number_of_votes = 0;
     for (int i = 0; i < temp.size(); i++)
     {
-        number_of_votes = temp[i]->getVotesPerCount().at(count->get_countNumber()-1);
+        number_of_votes = temp[i]->getVotesPerCount()[count->get_countNumber()-1].size();
         new QListWidgetItem(QString::number(number_of_votes), ui->votes_count_list);
     }
 }
@@ -113,14 +113,17 @@ void CountDialog::on_votes_list_itemActivated(QListWidgetItem* item)
     ui->label_4->setText(v1->getRoute());
 }
 
-void CountDialog::on_pushButton_clicked()
+/*void CountDialog::on_pushButton_clicked()
 {
-
-}
+    //STV::continue_count();
+    STV *stv;
+    stv->get_instance();
+    stv->continue_count();
+}*/
 
 void CountDialog::display_progress()
 {
-
+    ui->continue_btn->setText("It works!");
 }
 
 QPushButton* CountDialog::get_button()

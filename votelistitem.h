@@ -10,7 +10,7 @@ public:
     VoteListItem(Vote *v);
     int getId();
     QString getRoute();
-    QStringList getPreferences();
+    QList<QPair<int, bool> > getPreferences();
 
 private:
     Vote *v;

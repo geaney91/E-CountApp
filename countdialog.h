@@ -30,10 +30,13 @@ public:
     QPushButton *get_button();
     void display_progress();
 
+//signals:
+//    void on_pushButton_clicked();
+
 private slots:
     void on_votes_list_itemActivated(QListWidgetItem *item);
+    //void on_pushButton_clicked();
 
-    void on_pushButton_clicked();
 
 private:
     Ui::CountDialog *ui;

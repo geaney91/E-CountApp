@@ -22,19 +22,19 @@ STV::STV(FileWork *f)
     names = fileWork->get_Candidate_Names();
     parties = fileWork->get_Candidate_Parties();
     countDialog = new CountDialog();
+    connect(countDialog->get_button(), &QPushButton::clicked, this, &STV::continue_count);
 }
 
 /*STV STV::get_instance()
 {
-    return this;
+    //return this;
 }*/
 
-void STV::start()
+void STV::start(QProgressDialog *pd)
 {
+    dialog = pd;
     validate_votes();
-    create_candidates();
-    create_valid_votes();
-    display_static_count_info();
+
     //dialog.setValue(dialog.value() + 1);
     //dialog.close();
     //QPixmap pix(":/background2.png");
@@ -50,6 +50,7 @@ void STV::validate_votes()
     Validate *v = new Validate();
     valids = v->remove_invalids(votes, names);
     invalids = v->get_invalids();
+    create_candidates();
     /*QThread* thread = new QThread;
     thread->start();
     thread->wait();
@@ -67,32 +68,34 @@ void STV::create_candidates()
     {
         candidates.append(new Candidate(names[i], parties[i]));
     }
+    create_valid_votes();
 }
 
 void STV::create_valid_votes()
 {
+    dialog->setLabelText("Creating vote objects....");
     for (int i = 0; i < valids.size(); i++)
     {
+        dialog->setValue(i);
         QString l = valids[i];
         QStringList prefs = l.split(",");
-        validVotes.append(new Vote(i+1, "", prefs));
-    }
-    countDialog->set_list(validVotes);
-    //emit finished();
-}
+        QList<QPair<int, bool>> preferences;
+        foreach (QString pref, prefs)
+        {
+            preferences.append(qMakePair(pref.toInt(), false));
+        }
 
-void STV::run()
-{
-    //create_valid_votes();
+        validVotes.append(new Vote(i+1, "", preferences));
+    }
+    dialog->setValue(valids.size());
+    countDialog->set_list(validVotes);
+    display_static_count_info();
 }
 
 void STV::display_static_count_info()
 {
-    countDialog->show();
-    //splash->close();
     calculate_quota();
     countDialog->set_static_count_info(votes.size(), valids.size(), invalids.size(), quota, seats);
-    //c->set_list(invalids);
     start_count();
 }
 
@@ -104,39 +107,49 @@ void STV::calculate_quota()
 void STV::start_count()
 {
     countNumber = 1;
+    distribute_votes();
+}
+
+void STV::distribute_votes()
+{
+    //dialog->setValue(51);
+    int count = valids.size();
+    dialog->setLabelText("First Count...");
     for (int i = 0; i < validVotes.size(); i++)
     {
+        dialog->setValue(count+i);
         Vote *v = validVotes[i];
-        QStringList l = v->get_preferences();
-        for (int j = 0; j < l.size(); j++)
+        //QStringList l = v->get_preferences();
+        QList<QPair<int, bool>> l = v->get_preferences();
+        int size = l.size();
+        for (int j = 0; j < size; j++)
         {
-            if (l[j] == "1")
+            if (l[j].first == countNumber && !l[j].second)
             {
                 candidates[j]->increment_votes(countNumber-1, v);
                 v->set_route(TrackVote::add_assignment_route_string(candidates[j]));
+                l[j].second = true;
                 break;
             }
         }
 
     }
-    //active = candidates;
-
-    while (elected.size() < seats)
-    {
-        display_dynamic_count_info();
-    }
-    //connect(countDialog->get_button(), SIGNAL (clicked()), this, SLOT (continue_count()));
+    dialog->setValue(valids.size()+ validVotes.size());
+    display_dynamic_count_info();
 }
 
 void STV::display_dynamic_count_info()
 {
     Count *count = new Count(candidates, elected, eliminated, active, validVotes, nonTransferableVotes, countNumber);
     countDialog->set_count_info(count);
-    continue_count();
+    dialog->setValue(1000000);
+    countDialog->show();
+    //continue_count();
 }
 
 void STV::continue_count()
 {
+    //countDialog->display_progress();
     check_for_elected();
 }
 
@@ -147,13 +160,14 @@ void STV::check_for_elected()
     //QList<int> surpluses;
     for (int i = 0; i < candidates.size(); i++)
     {
-        if (candidates[i]->getVotesPerCount().at(countNumber-1) >= quota)
+        QList<QList<Vote *>> list = candidates[i]->getVotesPerCount();
+        if (list[countNumber-1].size() >= quota)
         {
             check = true;
             elected.append(candidates[i]);
             //active.removeAt(i);
             candidates[i]->set_status(false);
-            int surplus = candidates[i]->getVotesPerCount().at(countNumber-1) - quota;
+            int surplus = list[countNumber-1].size() - quota;
             candidates[i]->set_surplus(surplus);
             count++;
             //surpluses.append(surplus);
@@ -205,21 +219,35 @@ void STV::check_surplus_type(Candidate *c)
     {
         bool check = false;
         Vote *v = c->getVotesPerCount().at(countNumber-1)[i];
-        QStringList l = v->get_preferences();
-        for (int j = 0; j < l.size(); j++)
+        //QStringList l = v->get_preferences();
+        QList<QPair<int, bool>> list = v->get_preferences();
+        int size1 = list.size();
+        /*for (int j = 0; j < size1; j++)
         {
-            if (l[j] == countNumber+1)// && candidates[j]->get_status())
+            if (list[j] == countNumber+1)// && candidates[j]->get_status())
             {
                 check = true;
             }
         }
         if (!check)
+        {
+
+        }*/
     }
 }
 
 void STV::excluding_candidates()
 {
+    /*int lowest = 0;
+    QList<int> list = c->getVotesPerCount()[countNumber-1];
+    int size = candidates.size();
+    for (int i = 0; i < size; i++)
+    {
+        int numOfVotes = c->getVotesPerCount()[countNumber-1].size();
+        if (numOfVotes < lowest)
+            lowest = numOfVotes;
 
+    }*/
 }
 
 QStringList STV::get_valids()

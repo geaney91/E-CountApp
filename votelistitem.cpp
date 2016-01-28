@@ -15,7 +15,7 @@ QString VoteListItem::getRoute()
     return v->get_route();
 }
 
-QStringList VoteListItem::getPreferences()
+QList<QPair<int, bool>> VoteListItem::getPreferences()
 {
     return v->get_preferences();
 }

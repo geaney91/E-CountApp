@@ -11,22 +11,22 @@
 #include <QThread>
 #include <QProgressDialog>
 
-class STV : public QThread
+class STV : public QObject
 {
 public:
     STV();
     STV(FileWork *f);
-
-    void start();
+    //STV get_instance();
+    void start(QProgressDialog *pd);
 
     QStringList get_valids();
     QList<Vote *> get_votes();
-    void run();
 
 private:
     //MainWindow *mw;
     CountDialog *countDialog;
     FileWork *fileWork;
+    QProgressDialog *dialog;
 
     QList<Candidate *> candidates;
     QList<Vote *> validVotes;
@@ -57,6 +57,7 @@ public slots:
     void create_candidates();
     void create_valid_votes();
     void display_dynamic_count_info();
+    void distribute_votes();
     void continue_count();
     void surplus_distribution(int count);
     void check_surplus_type(Candidate *c);

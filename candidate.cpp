@@ -12,11 +12,12 @@ Candidate::Candidate(QString n, QString p)
     party = p;
     surplus = 0;
     active = true;
-    //votesPerCount.append(0);
+    votesPerCount.append(votes);
 }
 
 void Candidate::increment_votes(int countNum, Vote *v)
 {
+    //votesPerCount.append(new QList<Vote *>);
     votesPerCount[countNum].append(v);
 }
 
