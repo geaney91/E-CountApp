@@ -28,6 +28,7 @@ private:
     QList<Candidate *> eliminated;
     QList<Candidate *> active;
 
+
     int countNumber;
     int seats;
     int quota;

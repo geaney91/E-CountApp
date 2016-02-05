@@ -252,8 +252,12 @@
          <height>0</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true">border-color: rgb(255, 0, 0);
+background-color: rgb(0, 170, 0);</string>
+       </property>
        <property name="text">
-        <string>PushButton</string>
+        <string>Continue</string>
        </property>
       </widget>
      </item>

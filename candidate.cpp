@@ -12,18 +12,23 @@ Candidate::Candidate(QString n, QString p)
     party = p;
     surplus = 0;
     active = true;
-    votesPerCount.append(votes);
+    //votesPerCount.append(votes);
 }
 
-void Candidate::increment_votes(int countNum, Vote *v)
+void Candidate::increment_votes(/*int countNum, */Vote *v)
 {
-    //votesPerCount.append(new QList<Vote *>);
-    votesPerCount[countNum].append(v);
+    //votesPerCount[countNum].append(v);
+    votes.append(v);
 }
 
-QList<QList<Vote *>> Candidate::getVotesPerCount()
+/*QList<QList<Vote *>> Candidate::getVotesPerCount()
 {
     return votesPerCount;
+}*/
+
+QList<Vote *> Candidate::getVotes()
+{
+    return votes;
 }
 
 QString Candidate::get_Name()

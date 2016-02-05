@@ -33,7 +33,8 @@ void CountDialog::set_list(QList<Candidate *> c)
         Candidate *l = c[i];
         //QString name = l->getName();
         //new QListWidgetItem(name, ui->excluded_list);
-        QString name = QString::number(l->getVotesPerCount()[i].size());
+        //QString name = QString::number(l->getVotesPerCount()[i].size());
+        QString name = QString::number(l->getVotes().size());
         new QListWidgetItem(name, ui->excluded_list);
     }
 }
@@ -81,7 +82,8 @@ void CountDialog::set_count_info(Count *count)
     int number_of_votes = 0;
     for (int i = 0; i < temp.size(); i++)
     {
-        number_of_votes = temp[i]->getVotesPerCount()[count->get_countNumber()-1].size();
+        //number_of_votes = temp[i]->getVotesPerCount()[count->get_countNumber()-1].size();
+        number_of_votes = temp[i]->getVotes().size();
         new QListWidgetItem(QString::number(number_of_votes), ui->votes_count_list);
     }
 }

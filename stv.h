@@ -35,6 +35,7 @@ private:
     QList<Candidate *> elected;
     QList<Candidate *> eliminated;
     QList<Candidate *> active;
+    QList<Count *> counts;
 
     void display_static_count_info();
     void calculate_quota();
@@ -60,10 +61,10 @@ public slots:
     void validate_votes();
     void create_candidates();
     void create_valid_votes();
-    void display_dynamic_count_info();
+    void display_count_info();
     void distribute_votes();
     void continue_count();
-    void surplus_distribution(const QList<int> &surpluses);
+    void surplus_distribution(const QList<int> &surpluses, int count);
     void check_surplus_type(const int &i);
     void finding_next_valid_preference(int j, const QList<QPair<int, bool> > &list, Candidate *c, Vote *v, QList<Vote *> temp);
     void excluding_candidates();

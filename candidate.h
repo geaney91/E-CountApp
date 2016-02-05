@@ -9,18 +9,19 @@ class Candidate
 public:
     Candidate();
     Candidate(QString n, QString p);
-    QList<QList<Vote *>> getVotesPerCount();
+    //QList<QList<Vote *>> getVotesPerCount();
+    QList<Vote *> getVotes();
     QString get_Name();
     QString get_Party();
     int get_surplus();
     void set_surplus(int s);
     bool get_status();
     void set_status(bool set);
-    void increment_votes(int countNum, Vote *v);
+    void increment_votes(/*int countNum, */Vote *v);
 
 
 private:
-    QList<QList<Vote *>> votesPerCount;
+    //QList<QList<Vote *>> votesPerCount;
     QList<Vote *> votes;
     QString name;
     QString party;
