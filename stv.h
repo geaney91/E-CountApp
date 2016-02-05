@@ -16,7 +16,7 @@ class STV : public QObject
 public:
     STV();
     STV(FileWork *f);
-    //STV get_instance();
+
     void start(QProgressDialog *pd);
 
     QStringList get_valids();
@@ -30,7 +30,8 @@ private:
 
     QList<Candidate *> candidates;
     QList<Vote *> validVotes;
-    QList<Vote *> nonTransferableVotes;
+    QList<Vote *> nonTransferableVotesNotEffective;
+    QList<Vote *> transferableVotes;
     QList<Candidate *> elected;
     QList<Candidate *> eliminated;
     QList<Candidate *> active;
@@ -39,7 +40,10 @@ private:
     void calculate_quota();
     void start_count();
     void check_for_elected();
-
+    void separating_transferable_nonTransferable(int j, const QList<QPair<int, bool>> &list, Candidate *c, Vote *v);
+    void transferables_greater_than_surplus();
+    void transferables_equal_to_surplus();
+    void transferables_less_than_surplus();
     int seats;
     int quota;
     int countNumber;
@@ -59,8 +63,9 @@ public slots:
     void display_dynamic_count_info();
     void distribute_votes();
     void continue_count();
-    void surplus_distribution(int count);
-    void check_surplus_type(Candidate *c);
+    void surplus_distribution(const QList<int> &surpluses);
+    void check_surplus_type(const int &i);
+    void finding_next_valid_preference(int j, const QList<QPair<int, bool> > &list, Candidate *c, Vote *v, QList<Vote *> temp);
     void excluding_candidates();
 };
 

@@ -21,6 +21,7 @@ Vote::Vote(int id, QString route, QList<QPair<int, bool>> preferences/*QStringLi
     this->id = id;
     this->route = route;
     this->preferences = preferences;
+    transferable = true;
 }
 
 int Vote::get_id()
@@ -41,4 +42,14 @@ void Vote::set_route(QString r)
 QList<QPair<int, bool>> Vote::get_preferences()
 {
     return preferences;
+}
+
+void Vote::set_transferable(bool set)
+{
+    transferable = set;
+}
+
+bool Vote::is_transferable()
+{
+    return transferable;
 }

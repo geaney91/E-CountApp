@@ -18,11 +18,14 @@ public:
     void set_route(QString r);
     //QStringList get_preferences();
     QList<QPair<int, bool>> get_preferences();
+    void set_transferable(bool set);
+    bool is_transferable();
 
 private:
     int id;
     QString route;
     QList<QPair<int, bool>> preferences;
+    bool transferable;
     //QStringList preferences;
     int *ptr;
 
