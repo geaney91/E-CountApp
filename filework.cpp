@@ -11,6 +11,7 @@
 #include <string>
 #include <fstream>
 #include <istream>
+#include <QApplication>
 
 FileWork::FileWork()
 {
@@ -35,6 +36,7 @@ void FileWork::Open(QWidget *q)
     else
     {
         QMessageBox::information(0, "Error", "File is empty. Exiting application.");
+        QApplication::quit();
     }
 
 }

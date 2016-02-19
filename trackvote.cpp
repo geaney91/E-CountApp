@@ -11,8 +11,14 @@ QString TrackVote::add_assignment_route_string(Candidate *c)
     return route;
 }
 
-QString TrackVote::add_transferred_route_string(Candidate *c)
+QString TrackVote::add_transferred_in_surplus_route_string(Candidate *c)
 {
-    QString route = "Transferred in surplus to " + c->get_Name() + "\n";
+    QString route = " - Transferred in surplus to " + c->get_Name() + "\n";
+    return route;
+}
+
+QString TrackVote::add_transferred_in_exclusion_route_string(Candidate *c)
+{
+    QString route = " - Transferred in exclusion to " + c->get_Name() + "\n";
     return route;
 }

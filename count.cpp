@@ -7,16 +7,16 @@ Count::Count()
 
 }
 
-Count::Count(QList<Candidate *> c, QList<Candidate *> elec, QList<Candidate *> elim, QList<Candidate *> act, QList<Vote *> v,
-             QList<Vote *> ntv, int countNum)
+Count::Count(QList<Candidate *> c, QList<Candidate *> elec, QList<Candidate *> excl, QList<Vote *> v,
+             QList<Vote *> ntv, int countNum, QString distribInfo)
 {
     candidates = c;
     elected = elec;
-    eliminated = elim;
-    active = act;
+    excluded = excl;
     validVotes = v;
-    nonTransferableVotes = ntv;
+    nonTransferableVotesNotEffective = ntv;
     countNumber = countNum;
+    distributionInfo = distribInfo;
 }
 
 QList<Candidate *> Count::get_candidates()
@@ -29,14 +29,9 @@ QList<Candidate *> Count::get_elected()
     return elected;
 }
 
-QList<Candidate *> Count::get_eliminated()
+QList<Candidate *> Count::get_excluded()
 {
-    return eliminated;
-}
-
-QList<Candidate *> Count::get_active()
-{
-    return active;
+    return excluded;
 }
 
 QList<Vote *> Count::get_validVotes()
@@ -44,12 +39,17 @@ QList<Vote *> Count::get_validVotes()
     return validVotes;
 }
 
-QList<Vote *> Count::get_nonTransferableVotes()
+QList<Vote *> Count::get_nonTransferable_votes_not_effective()
 {
-    return nonTransferableVotes;
+    return nonTransferableVotesNotEffective;
 }
 
 int Count::get_countNumber()
 {
     return countNumber;
+}
+
+QString Count::get_distribution_info()
+{
+    return distributionInfo;
 }

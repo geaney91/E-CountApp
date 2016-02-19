@@ -36,12 +36,17 @@ QString Vote::get_route()
 
 void Vote::set_route(QString r)
 {
-    route = r;
+    route += r;
 }
 
 QList<QPair<int, bool>> Vote::get_preferences()
 {
     return preferences;
+}
+
+void Vote::set_preferences(QList<QPair<int, bool> > prefs)
+{
+    preferences = prefs;
 }
 
 void Vote::set_transferable(bool set)
