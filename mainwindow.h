@@ -16,6 +16,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void pop_dialog();
+    void close_dialog();
 
 private slots:
     void on_chooseFileBtn_clicked();
@@ -25,7 +27,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     FileWork *fileWork;
-    //QProgressDialog *progressDialog;
+    //QProgressDialog *d;
 };
 
 #endif // MAINWINDOW_H

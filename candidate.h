@@ -18,12 +18,14 @@ public:
     QString get_Party();
     int get_surplus();
     void set_surplus(int s);
-    bool get_status();
+    int get_status();
     void set_status(int set);
     void increment_votes(int countNum, Vote *v);
     void set_votes(QList<Vote *> votes);
+    void set_votes(QList<Vote *> votes, int index);
     void clear_votes();
     int index_of_count_candidate_was_elected_in();
+    void remove_vote();
 
 private:
     QList<QList<Vote *>> votesPerCount;
@@ -33,6 +35,7 @@ private:
     QString party;
     int surplus;
     int status;
+    //QVector<QList<Vote *>> next_preferences ()
 
 signals:
 

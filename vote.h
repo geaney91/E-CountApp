@@ -21,12 +21,15 @@ public:
     void set_preferences(QList<QPair<int, bool>> prefs);
     void set_transferable(bool set);
     bool is_transferable();
+    int get_transferable_to();
+    void set_transferable_to(int t);
 
 private:
     int id;
     QString route;
     QList<QPair<int, bool>> preferences;
     bool transferable;
+    int transferable_to;
     //QStringList preferences;
     int *ptr;
 

@@ -29,6 +29,12 @@ void Candidate::set_votes(QList<Vote *> votes)
     votesPerCount.append(this->votes);
 }
 
+void Candidate::set_votes(QList<Vote *> votes, int index)
+{
+    this->votes = votes;
+    votesPerCount[index] = this->votes;
+}
+
 QList<QList<Vote *>> Candidate::get_VotesPerCount()
 {
     return votesPerCount;
@@ -79,7 +85,7 @@ void Candidate::set_surplus(int s)
     surplus = s;
 }
 
-bool Candidate::get_status()
+int Candidate::get_status()
 {
     return status;
 }
@@ -100,4 +106,10 @@ void Candidate::clear_votes()
 int Candidate::index_of_count_candidate_was_elected_in()
 {
     return votesPerCount.size()-1;
+}
+
+
+void Candidate::remove_vote()
+{
+    votesPerCount[index_of_count_candidate_was_elected_in()].removeLast();
 }

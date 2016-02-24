@@ -38,22 +38,21 @@ void MainWindow::on_chooseFileBtn_clicked()
 void MainWindow::on_countBtn_clicked()
 {
     STV *stv = new STV(fileWork);
-    int count = (stv->get_valids().size()*2)+100;
-    QProgressDialog *dialog = new QProgressDialog("Counting..", "Abort..", 0, 100000, this);
-    /*QProgressBar *bar = new QProgressBar(&dialog);
-    bar->setRange(0, 0);
-    bar->setValue(0);
-    dialog.setBar(bar);*/
-
-    dialog->setMinimumWidth(350);
-    dialog->setMinimumDuration(1000);
-    dialog->setWindowModality(Qt::WindowModal);
-    dialog->setMinimumDuration(0);
-    dialog->setValue(0);
-    stv->start(dialog);
+    QProgressDialog *d = new QProgressDialog("Counting..", "Abort", 0, INT_MAX, this);
+    d->setValue(0);
+    d->setWindowModality(Qt::WindowModal);
+    stv->start(d);
     this->hide();
-    //dialog.setValue(dialog.value() + 1);
-    //dialog.close();
 }
 
+void MainWindow::pop_dialog()
+{
+    //d = new QProgressDialog("Counting..", "Abort", 0, INT_MAX, this);
+    //d->show();
+}
+
+void MainWindow::close_dialog()
+{
+    //d->close();
+}
 
