@@ -18,6 +18,8 @@ public:
     QString get_Party();
     int get_surplus();
     void set_surplus(int s);
+    bool get_surplusBeingDistributed();
+    void set_surplusBeingDistributed(bool d);
     int get_status();
     void set_status(int set);
     void increment_votes(int countNum, Vote *v);
@@ -35,6 +37,7 @@ private:
     QString party;
     int surplus;
     int status;
+    bool surplusBeingDistributed;
     //QVector<QList<Vote *>> next_preferences ()
 
 signals:

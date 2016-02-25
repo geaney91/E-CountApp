@@ -13,6 +13,7 @@ Candidate::Candidate(int id, QString n, QString p)
     party = p;
     surplus = 0;
     status = 0;
+    surplusBeingDistributed = false;
     //votesPerCount.append(votes);
     //votesPerCount.append(new QList<Vote *>);
 }
@@ -83,6 +84,16 @@ int Candidate::get_surplus()
 void Candidate::set_surplus(int s)
 {
     surplus = s;
+}
+
+bool Candidate::get_surplusBeingDistributed()
+{
+    return surplusBeingDistributed;
+}
+
+void Candidate::set_surplusBeingDistributed(bool d)
+{
+    surplusBeingDistributed = d;
 }
 
 int Candidate::get_status()

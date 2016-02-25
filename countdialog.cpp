@@ -115,9 +115,18 @@ void CountDialog::set_votes_changes(const QList<Candidate *> temp)
         }
         else if (temp[i]->get_status() == 1)
         {
-            number_of_votes = temp[i]->get_surplus();
-            string = "-" + QString::number(number_of_votes);
-            new QListWidgetItem(string, ui->vote_changes_list);
+            if (temp[i]->get_surplusBeingDistributed() == true)
+            {
+                number_of_votes = temp[i]->get_surplus();
+                string = "-" + QString::number(number_of_votes);
+                new QListWidgetItem(string, ui->vote_changes_list);
+            }
+            else
+            {
+                //number_of_votes = temp[i]->get_votes_for_particular_count(temp[i]->index_of_count_candidate_was_elected_in()).size();
+                string = "+0";
+                new QListWidgetItem(string, ui->vote_changes_list);
+            }
         }
         else
         {

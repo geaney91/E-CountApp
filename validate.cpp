@@ -11,12 +11,13 @@ QStringList Validate::remove_invalids(QStringList votes, QStringList names)
     for (int i = 0; i < votes.size();)
     {
         QString l = votes[i];
-        if (fourth_check(l))
+        if (first_check(l))
         {
-            if (second_check(l))
+            i++;
+            /*if (second_check(l))
             {
-                ++i;
-                /*if (third_check(l, count))
+                i++;
+                if (third_check(l, count))
                 {
                     //break;
                 }
@@ -25,14 +26,14 @@ QStringList Validate::remove_invalids(QStringList votes, QStringList names)
                     votes.removeAt(i);
                     invalids.append(l);
                     //add_invalids(votes, l, i);
-                }*/
+                }
             }
             else
             {
                 votes.removeAt(i);
                 invalids.append(l);
                 //add_invalids(votes, l, i);
-            }
+            }*/
         }
         else
         {
@@ -53,11 +54,19 @@ void Validate::add_invalids(QStringList votes, QString l, int i)
 
 bool Validate::first_check(QString l)
 {
+    bool check = true;
+    if (!l.contains("1"))
+    {
+        check = false;
+    }
+
+    return check;
+
     //if (!l.contains("1"))
     //    return false;
     //else
     //    return true;
-    QStringList l1 = l.split(",");
+    /*QStringList l1 = l.split(",");
     bool check = true;
     for (int i = 0; i < l1.size() && check; i++)
     {
@@ -66,8 +75,7 @@ bool Validate::first_check(QString l)
             check = false;
         else
             check = true;
-    }
-    return check;
+    }*/
     //if(!check)
     //    return false;
     //else
