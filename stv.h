@@ -50,6 +50,7 @@ public:
     QList<QList<Vote *> > finding_next_valid_preference(int j, QList<Vote *> votes);
     int distributing_by_next_valid_preference(int j, Vote *v, const int &distribution_type);
     void defining_candidates_for_exclusion();
+    void equal_lowest_candidates(const int &equal, QList<Candidate *> &exclusions);
     bool should_candidate_be_excluded();
     void excluding_candidates(QList<Candidate *> exclusions);
     void distribute_excluded_votes(const int &j, QVector<QList<Vote *> > &lists);

@@ -39,7 +39,7 @@ void CountDialog::set_list(/*QList<Vote *> votesQList <Candidate *> c, int i, QP
     for (int y = 0; y < size; y++)
     {
         QList<Vote *> votes = count->get_candidates().at(y)->get_total_votes();
-        for (int j = 0; j < votes.size(); j++)
+        for (int j = votes.size()-1; j >= 0; j--)
         {
             //dialog->setValue(j);
             Vote *v = votes[j];
@@ -48,7 +48,21 @@ void CountDialog::set_list(/*QList<Vote *> votesQList <Candidate *> c, int i, QP
             ui->votes_list->addItem(item);
         }
     }
+    display_non_transferable_votes();
     //dialog->setValue(100000);
+}
+
+void CountDialog::display_non_transferable_votes()
+{
+    QList<Vote *> nonTs = count->get_nonTransferable_votes_not_effective();
+    int nonTs_size = nonTs.size();
+    for (int i = 0; i < nonTs_size; i++)
+    {
+        Vote *v = nonTs[i];
+        VoteListItem *item = new VoteListItem(v);
+        item->setText(QString::number(v->get_id()));
+        ui->votes_list->addItem(item);
+    }
 }
 
 void CountDialog::set_static_count_info(int total, int valid, int invalid, int quota, int seats)
@@ -100,6 +114,17 @@ void CountDialog::set_count_info(Count *c)
     set_distribution_info();
 }
 
+void CountDialog::add_info_to_lists(QList<Candidate *> temp, QListWidget *lw)
+{
+    int size = temp.size();
+    QString name = "";
+    for (int i = 0; i < size; i++)
+    {
+        name = temp[i]->get_Name();
+        new QListWidgetItem(name, lw);
+    }
+}
+
 void CountDialog::set_votes_changes(const QList<Candidate *> temp)
 {
     QString string = "";
@@ -134,17 +159,6 @@ void CountDialog::set_votes_changes(const QList<Candidate *> temp)
             string = "-" + QString::number(number_of_votes);
             new QListWidgetItem(string, ui->vote_changes_list);
         }
-    }
-}
-
-void CountDialog::add_info_to_lists(QList<Candidate *> temp, QListWidget *lw)
-{
-    int size = temp.size();
-    QString name = "";
-    for (int i = 0; i < size; i++)
-    {
-        name = temp[i]->get_Name();
-        new QListWidgetItem(name, lw);
     }
 }
 

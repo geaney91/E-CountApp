@@ -20,6 +20,7 @@ public:
     explicit CountDialog(QWidget *parent = 0);
     ~CountDialog();
     void set_list();
+    void display_non_transferable_votes();
     void set_static_count_info(int total, int valid, int invalid, int quota, int seats);
     void set_count_info(Count *c);
     void set_votes_changes(const QList<Candidate *> temp);
