@@ -7,6 +7,7 @@
 #include <QProgressDialog>
 #include <QProgressBar>
 #include <QPushButton>
+#include "writetologfile.h"
 
 STV::STV()
 {
@@ -84,6 +85,7 @@ void STV::calculate_quota()
 void STV::start_count()
 {
     distributionInfo = "";
+    textForLogFile = "";
     countNumber = 1;
     distribute_first_preferences();
     check_for_elected();
@@ -92,6 +94,7 @@ void STV::start_count()
 
 void STV::distribute_first_preferences()
 {
+    textForLogFile += "Count " + QString::number(countNumber) + "\n";
     QVector<QList<Vote *>> lists (size);
     for (int i = 0; i < validVotes.size(); i++)
     {
@@ -135,6 +138,7 @@ void STV::check_for_elected()
                 {
                     check = true;
                     elected.append(candidates[i]);
+                    textForLogFile += candidates[i]->get_Name() + " elected\n";
                     //active.removeAt(i);
                     candidates[i]->set_status(1);
                     int surplus = total - quota;
@@ -172,6 +176,8 @@ void STV::continue_count()
     QVector<int> next_preferences (size);
     transferableVotes.clear();
     countNumber++;
+    textForLogFile += "\nCount " + QString::number(countNumber) + "\n";
+    bool check = true;
     int count = 0;
 
     if (check_if_should_continue())
@@ -186,9 +192,14 @@ void STV::continue_count()
                     count++;
                 }
             }
+            //if (countNumber == 3)
+            //{
+            //    check = false;
+            //}
             int surplus_to_distribute = check_if_meets_criteria(count, next_preferences);
             if (surplus_to_distribute != 100)
-            {                
+            {
+                textForLogFile += "Distribution of " + candidates[surplus_to_distribute]->get_Name() + "'s surplus\n";
                 surplus_distribution(candidates[surplus_to_distribute], next_preferences);
             }
             else
@@ -224,6 +235,10 @@ bool STV::check_if_should_continue()
         }
         if (continuing_cands.size() == (seats - elected.size()))
         {
+            for (int i = 0; i < continuing_cands.size(); i++)
+            {
+                textForLogFile += continuing_cands[i]->get_Name() + "elected\n";
+            }
             elected.append(continuing_cands);
             met = false;
         }
@@ -247,6 +262,10 @@ bool STV::check_if_should_continue()
             if (cands[0]->get_total_votes().size()+surpluses < cands[1]->get_total_votes().size())
             {
                 cands.removeFirst();
+                for (int i = 0; i < cands.size(); i++)
+                {
+                    textForLogFile += cands[i]->get_Name() + " elected\n";
+                }
                 elected.append(cands);
                 met = false;
             }
@@ -275,6 +294,7 @@ bool STV::check_if_should_continue()
                 }
                 if (largest > rest + surpluses)
                 {
+                    textForLogFile += continuing_cands[i]->get_Name() + " elected\n";
                     elected.append(continuing_cands[i]);
                     met = false;
                 }
@@ -297,6 +317,7 @@ int STV::check_if_meets_criteria(const int &count, QVector<int> &next_preference
     //QVector<int> next_preferences (size);
     int distributable_candidate = 100;
     bool met = false;
+    bool check = true;
     Candidate *c;
     QList<Candidate *> candidates_with_surpluses;
     //QList<Vote *> electeds_votes;
@@ -321,6 +342,10 @@ int STV::check_if_meets_criteria(const int &count, QVector<int> &next_preference
         }
         //QVector<int> type = check_surplus_type(c);
         int surplus = c->get_surplus();
+        if (countNumber == 3)
+        {
+            check = false;
+        }
         check_surplus_type(surplus, electeds_votes, next_preferences);
         distributable_candidate = check_criteria(c, next_preferences);
         //QList<Vote *> count_where_surplus_arose_votes = c->get_votes_for_particular_count(countNumber-2);
@@ -810,13 +835,13 @@ bool STV::elects_highest_continuing_candidate(const QVector<int> &next_preferenc
         }
     }
     indices.append(index);
-    for (int i = index+1; i < size; i++)
+    for (int i = 0; i < size; i++)
     {
         if (candidates[i]->get_status() == 0)
         {
             if (candidates[i]->get_total_votes().size() > candidates[index]->get_total_votes().size())
             {
-                indices[index] = i;
+                indices[0] = i;
             }
             else if (candidates[i]->get_total_votes().size() == candidates[index]->get_total_votes().size())
             {
@@ -884,8 +909,9 @@ bool STV::brings_lowest_candidate_up(const QVector<int> &next_preferences)
     {
         which_surplus_to_distribute(lowest);
     }*/
-
-    if (num_of_votes[0]->get_total_votes().size()+ next_preferences[index_of_lowest] >= num_of_votes[1]->get_total_votes().size())
+    index_of_lowest = num_of_votes[0]->get_id()-1;
+    int second_lowest = num_of_votes[1]->get_id()-1;
+    if (num_of_votes[0]->get_total_votes().size()+ next_preferences[index_of_lowest] >= num_of_votes[1]->get_total_votes().size() + next_preferences[second_lowest])
     {
         return true;
     }
@@ -1023,6 +1049,10 @@ void STV::defining_candidates_for_exclusion()
                 exclusions.append(num_of_votes[x]);
             }
         }
+        else if (i == 1 && !check)
+        {
+            exclusions.append(num_of_votes[0]);
+        }
     }
     /*amount += num_of_votes[0]->get_total_votes().size();
     bool check = false;
@@ -1121,6 +1151,7 @@ void STV::excluding_candidates(QList<Candidate *> exclusions)
     for (int i = 0; i < exclusions.size(); i++)
     {
         distributionInfo += exclusions[i]->get_Name() + "'s, ";
+        textForLogFile += exclusions[i]->get_Name() + ", ";
         eliminated.append(exclusions[i]);
         for (int j = 0; j < size; j++)
         {
@@ -1142,6 +1173,7 @@ void STV::excluding_candidates(QList<Candidate *> exclusions)
         }
     }
     distributionInfo += " votes";
+    textForLogFile += " excluded\n";
     countDialog->set_votes_changes(candidates);
     for (int i = 0; i < exclusions.size(); i++)
     {
@@ -1405,6 +1437,8 @@ void STV::clear_candidates_votes()
 
 void STV::count_complete()
 {
+    textForLogFile += "\nCount Complete";
+    WriteToLogFile::write_to_file(textForLogFile);
     countDialog->disable_continue_button();
     //QMessageBox box("Count Complete", "CountComplete", countDialog);
     //box.show();

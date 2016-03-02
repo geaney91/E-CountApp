@@ -91,6 +91,7 @@ private:
     QStringList parties;
 
     QString distributionInfo;
+    QString textForLogFile;
     int size;
 
 signals:
