@@ -24,7 +24,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>20</y>
+      <y>10</y>
       <width>221</width>
       <height>20</height>
      </rect>
@@ -36,8 +36,8 @@
    <widget class="QLabel" name="fileNameLbl">
     <property name="geometry">
      <rect>
-      <x>156</x>
-      <y>120</y>
+      <x>160</x>
+      <y>130</y>
       <width>81</width>
       <height>20</height>
      </rect>
@@ -53,7 +53,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>60</y>
+      <y>90</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -201,6 +201,19 @@
     </property>
     <property name="text">
      <string>Counting...Please wait!</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="runFormatCheckbox">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>50</y>
+      <width>221</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Check to run application straight through</string>
     </property>
    </widget>
   </widget>

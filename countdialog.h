@@ -33,7 +33,7 @@ public:
     void display_progress();
     //int get_total_candidate_votes(int j);
     QList<Vote *> get_total_candidate_vote_objects(int j);
-
+    void populate_combo_box();
     //void pop_dialog();
     //void close_dialog();
 
@@ -43,6 +43,14 @@ public:
 private slots:
     void on_votes_list_itemActivated(QListWidgetItem *item);
     //void on_pushButton_clicked();
+
+    void on_search_by_cand_combo_currentIndexChanged(int index);
+
+    void on_search_by_vote_id_rb_clicked();
+
+    void on_search_by_cand_rb_clicked();
+
+    void on_search_by_vote_id_btn_clicked();
 
 public slots:
     void reset_ui();

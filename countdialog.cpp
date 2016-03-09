@@ -9,6 +9,8 @@ CountDialog::CountDialog(QWidget *parent) :
     ui(new Ui::CountDialog)
 {
     ui->setupUi(this);
+    ui->search_by_cand_lbl->setEnabled(false);
+    ui->search_by_cand_combo->setEnabled(false);
 }
 
 CountDialog::~CountDialog()
@@ -234,4 +236,109 @@ void CountDialog::reset_ui()
     ui->elected_list->clear();
     ui->excluded_list->clear();
     ui->vote_changes_list->clear();
+    ui->votes_list->clear();
+}
+
+void CountDialog::populate_combo_box()
+{
+    ui->search_by_cand_combo->clear();
+    //ui->search_by_cand_combo->addItem("");
+    for (int i = 0; i < count->get_candidates().size(); i++)
+    {
+        ui->search_by_cand_combo->addItem(count->get_candidates().at(i)->get_Name());
+    }
+    QString non_t = "non-transferables";
+    ui->search_by_cand_combo->addItem(non_t);
+}
+
+void CountDialog::on_search_by_cand_combo_currentIndexChanged(int index)
+{
+    ui->votes_list->clear();
+    if (index >= 0 && index < count->get_candidates().size())
+    {
+        QList<Vote *> votes = count->get_candidates().at(index)->get_total_votes();
+        for (int j = votes.size()-1; j >= 0; j--)
+        {
+            //dialog->setValue(j);
+            Vote *v = votes[j];
+            VoteListItem *item = new VoteListItem(v);
+            item->setText(QString::number(v->get_id()));
+            ui->votes_list->addItem(item);
+        }
+    }
+    else if (index == count->get_candidates().size())
+        display_non_transferable_votes();
+    else
+    {}
+    //dialog->setValue(100000);
+}
+
+void CountDialog::on_search_by_vote_id_rb_clicked()
+{
+    ui->search_by_cand_combo->setEnabled(false);
+    ui->search_by_cand_lbl->setEnabled(false);
+    ui->search_by_cand_rb->setChecked(false);
+
+    ui->search_by_vote_id_lbl->setEnabled(true);
+    ui->search_by_vote_id_spinbox->setEnabled(true);
+    ui->search_by_vote_id_btn->setEnabled(true);
+    //ui->search_by_vote_id_rb->setChecked(false);
+}
+
+void CountDialog::on_search_by_cand_rb_clicked()
+{
+    ui->search_by_vote_id_lbl->setEnabled(false);
+    ui->search_by_vote_id_spinbox->setEnabled(false);
+    ui->search_by_vote_id_btn->setEnabled(false);
+    ui->search_by_vote_id_rb->setChecked(false);
+
+    ui->search_by_cand_combo->setEnabled(true);
+    ui->search_by_cand_lbl->setEnabled(true);
+    //ui->search_by_cand_rb->setChecked(false);
+}
+
+void CountDialog::on_search_by_vote_id_btn_clicked()
+{
+    QString id_string = ui->search_by_vote_id_spinbox->text();
+    if (id_string != "" && id_string != "0")
+    {
+        int id = id_string.toInt();
+        int size = count->get_candidates().size();
+        for (int y = 0; y < size; y++)
+        {
+            QList<Vote *> votes = count->get_candidates().at(y)->get_total_votes();
+            for (int j = votes.size()-1; j >= 0; j--)
+            {
+                //dialog->setValue(j);
+                Vote *v = votes[j];
+                if (v->get_id() == id)
+                {
+                    ui->votes_list->clear();
+                    VoteListItem *item = new VoteListItem(v);
+                    item->setText(QString::number(v->get_id()));
+                    ui->votes_list->addItem(item);
+                }
+            }
+        }
+        QList<Vote *> nonTs = count->get_nonTransferable_votes_not_effective();
+        int nonTs_size = nonTs.size();
+        for (int i = 0; i < nonTs_size; i++)
+        {
+            Vote *v = nonTs[i];
+            if (v->get_id() == id)
+            {
+                ui->votes_list->clear();
+                VoteListItem *item = new VoteListItem(v);
+                item->setText(QString::number(v->get_id()));
+                ui->votes_list->addItem(item);
+            }
+        }
+    }
+    else
+    {
+        QMessageBox box;
+        box.setText("Invalid vote id");
+        box.exec();
+    }
+
 }

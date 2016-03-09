@@ -18,6 +18,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     fileWork = new FileWork();
+    stv = new STV();
+    //QProgressBar bar;// = new QProgressBar(this);
+    connect( stv, SIGNAL(start()), this, SLOT(start_bar()) );
+    connect( stv, SIGNAL(display_count_info()), this, SLOT(stop_bar()) );
     ui->counting_lbl->setVisible(false);
     //progressDialog = new QProgressDialog("Counting...", "Abort", 0, INT_MAX, this);
 }
@@ -37,12 +41,34 @@ void MainWindow::on_chooseFileBtn_clicked()
 
 void MainWindow::on_countBtn_clicked()
 {
-    STV *stv = new STV(fileWork);
-    QProgressDialog *d = new QProgressDialog("Counting..", "Abort", 0, INT_MAX, this);
-    d->setValue(0);
-    d->setWindowModality(Qt::WindowModal);
-    stv->start(d);
-    this->hide();
+    int checked = 0;
+    if (ui->runFormatCheckbox->isChecked())
+    {
+        checked = 1;
+    }
+    //QProgressBar bar;
+    //bar.setMinimum(0);
+    //bar.setMaximum(0);
+    //bar.show();
+    //QProgressDialog *d = new QProgressDialog("Counting..", "Abort", 0, INT_MAX, this);
+    //d->setValue(0);
+    //d->setWindowModality(Qt::WindowModal);
+    stv->add_info(fileWork, checked);
+    stv->start();
+    if (checked == 0)
+        this->close();
+}
+
+void MainWindow::start_bar()
+{
+    bar.setMinimum(0);
+    bar.setMaximum(0);
+    bar.show();
+}
+
+void MainWindow::stop_bar()
+{
+    bar.setMaximum(10);
 }
 
 void MainWindow::pop_dialog()

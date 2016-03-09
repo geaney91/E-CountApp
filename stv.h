@@ -2,22 +2,25 @@
 #define STV_H
 
 #include <QMainWindow>
-#include "mainwindow.h"
 #include "candidate.h"
 #include "vote.h"
 #include "validate.h"
 #include "countdialog.h"
+#include "filework.h"
 #include <QSplashScreen>
 #include <QThread>
 #include <QProgressDialog>
+#include <QMessageBox>
 
 class STV : public QObject
 {
 public:
     STV();
-    STV(FileWork *f);
+    STV(FileWork *f, int checked);
 
-    void start(QProgressDialog *pd);
+    void add_info(FileWork *f, int checked);
+
+    void start(/*QProgressDialog *pd*/);
     void validate_votes();
     void create_candidates();
     void create_valid_votes();
@@ -38,19 +41,21 @@ public:
     bool brings_lowest_candidate_up(const QVector<int> &next_preferences);
     bool qualifies_for_expenses_recoupment(const QVector<int> &next_preferences);
 
-    void surplus_distribution(Candidate *c, QVector<int> &next_preferences);
+    void surplus_distribution(Candidate *c, const QVector<int> &next_preferences);
     void check_surplus_type(const int &surplus, QList<Vote *> electeds_votes, QVector<int> &next_preferences);
-    bool separating_transferable_nonTransferable(int j, Vote *v, bool q);
+    bool separating_transferable_nonTransferable(int j, Vote *v, bool q, int transfer_to);
     void transferables_greater_than_surplus(const int &surplus, QList<Vote *> votes, QVector<int> &next_preferences);
-    void sorting_out_fractions(QVector<float> &amounts_with_ratio, const QVector<int> &a, QVector<int> &a1, const int &total, const int &surplus);
-    void two_fractions();
+    void sorting_out_fractions(QVector<float> &amounts_with_ratio, const QVector<int> &a, const int &total, const int &surplus);
+    void total_greater_than_surplus(const QList<int> &equal_fractions, int lowest, QVector<float> &amounts_with_ratio, const QVector<int> &a);
+    void total_less_than_surplus(const QList<int> &indices, int highest, QVector<float> &amounts_with_ratio, const QVector<int> &a);
+    void fractions(int type, int &t, const QList<int> &equal_fractions,  const QVector<int> &a);
     void more_than_2_fractions();
-    void transferables_equal_to_or_less_than_surplus(const int &surplus, QList<Vote *> votes, QVector<int> &next_preferences);
+    void transferables_equal_to_or_less_than_surplus(QList<Vote *> votes, QVector<int> &next_preferences);
     //void transferables_less_than_surplus(const int &surplus, QList<Vote *> votes, QVector<int> &next_preferences);
     QList<QList<Vote *> > finding_next_valid_preference(int j, QList<Vote *> votes);
     int distributing_by_next_valid_preference(int j, Vote *v, const int &distribution_type);
     void defining_candidates_for_exclusion();
-    void equal_lowest_candidates(const int &equal, QList<Candidate *> &exclusions);
+    void equal_lowest_candidates(const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions);
     bool should_candidate_be_excluded();
     void excluding_candidates(QList<Candidate *> exclusions);
     void distribute_excluded_votes(const int &j, QVector<QList<Vote *> > &lists);
@@ -61,12 +66,13 @@ public:
 
     void count_complete();
 
-    void drawing_lots();
+    int drawing_lots(QList<int> list);
+    Candidate *drawing_lots(QList<Candidate *> list);
     QStringList get_valids();
     QList<Vote *> get_votes();
 
 private:
-    //MainWindow *mw;
+    //MainWindow mw;
     CountDialog *countDialog;
     FileWork *fileWork;
     QProgressDialog *dialog;
@@ -93,6 +99,8 @@ private:
     QString distributionInfo;
     QString textForLogFile;
     int size;
+    int checked;
+    QMessageBox mb;
 
 signals:
 

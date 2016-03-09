@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "filework.h"
 #include "stv.h"
+#include <QProgressBar>
 
 namespace Ui {
 class MainWindow;
@@ -23,10 +24,14 @@ private slots:
     void on_chooseFileBtn_clicked();
 
     void on_countBtn_clicked();
+    void start_bar();
+    void stop_bar();
 
 private:
     Ui::MainWindow *ui;
     FileWork *fileWork;
+    STV *stv;
+    QProgressBar bar;
     //QProgressDialog *d;
 };
 
