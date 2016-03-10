@@ -19,6 +19,8 @@ class CountDialog : public QDialog
 public:
     explicit CountDialog(QWidget *parent = 0);
     ~CountDialog();
+    void sync_scrollbars();
+    void set_count_distribution_info_lbl(QString text);
     void set_list();
     void display_non_transferable_votes();
     void set_static_count_info(int total, int valid, int invalid, int quota, int seats);
@@ -34,6 +36,8 @@ public:
     //int get_total_candidate_votes(int j);
     QList<Vote *> get_total_candidate_vote_objects(int j);
     void populate_combo_box();
+    void enable_final_results_button();
+
     //void pop_dialog();
     //void close_dialog();
 
@@ -51,6 +55,8 @@ private slots:
     void on_search_by_cand_rb_clicked();
 
     void on_search_by_vote_id_btn_clicked();
+
+    void on_final_results_btn_clicked();
 
 public slots:
     void reset_ui();

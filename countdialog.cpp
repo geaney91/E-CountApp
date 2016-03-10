@@ -2,15 +2,23 @@
 #include "ui_countdialog.h"
 #include "stv.h"
 #include "votelistitem.h"
+#include "resultsform.h"
 #include <QProgressDialog>
+#include <QScrollBar>
 
 CountDialog::CountDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CountDialog)
 {
     ui->setupUi(this);
-    ui->search_by_cand_lbl->setEnabled(false);
-    ui->search_by_cand_combo->setEnabled(false);
+    //if (checked == 0)
+        //connect(ui->continue_btn, &QPushButton::clicked, this, &STV::continue_count);
+    ui->search_by_vote_id_lbl->setVisible(false);
+    ui->search_by_vote_id_spinbox->setVisible(false);
+    ui->search_by_vote_id_btn->setVisible(false);
+    ui->search_by_vote_id_spinbox->setRange(1, 10000000);
+    ui->final_results_btn->setEnabled(false);
+    sync_scrollbars();
 }
 
 CountDialog::~CountDialog()
@@ -18,25 +26,45 @@ CountDialog::~CountDialog()
     delete ui;
 }
 
-void CountDialog::set_list(/*QList<Vote *> votesQList <Candidate *> c, int i, QProgressDialog *d*/)
+void CountDialog::sync_scrollbars()
 {
-    //QProgressDialog *dialog = new QProgressDialog("Displaying votes..", "Abort..", 0, 100000, this);
-    //QVariant qv;
-    /*QList<Vote *> votes = c->get_validVotes();
-    const int size = votes.size();
-    for (int i = 0; i < size; i++)
-    {
-        Vote *v = votes[i];
+    int current_slider_value = 0;
+    QScrollBar *scroll_1 = ui->candidates_list->verticalScrollBar();
+    QScrollBar *scroll_2 = ui->votes_count_list->verticalScrollBar();
+    QScrollBar *scroll_3 = ui->vote_changes_list->verticalScrollBar();
+    connect(scroll_1, &QAbstractSlider::valueChanged,
+            [=](int aSliderPosition) mutable {if (aSliderPosition != current_slider_value)
+                                        {
+                                            scroll_2->setValue(aSliderPosition);
+                                            scroll_3->setValue(aSliderPosition);
+                                            current_slider_value = aSliderPosition;
+                                        }
+        });
+    connect(scroll_2, &QAbstractSlider::valueChanged,
+            [=](int aSliderPosition) mutable {if (aSliderPosition != current_slider_value)
+                                        {
+                                            scroll_1->setValue(aSliderPosition);
+                                            scroll_3->setValue(aSliderPosition);
+                                            current_slider_value = aSliderPosition;
+                                        }
+        });
+    connect(scroll_3, &QAbstractSlider::valueChanged,
+            [=](int aSliderPosition) mutable {if (aSliderPosition != current_slider_value)
+                                        {
+                                            scroll_1->setValue(aSliderPosition);
+                                            scroll_2->setValue(aSliderPosition);
+                                            current_slider_value = aSliderPosition;
+                                        }
+        });
+}
 
-        //QString::number(v->get_id()), ui->votes_list
-        //QListWidgetItem* item;// = new QListWidgetItem();
-        //item->setData(Qt::UserRole, QVariant::fromValue(votes[i]));
-        //item->setText(QString::number(votes[i]->get_id()));
-        VoteListItem *item = new VoteListItem(v);
-        item->setText(QString::number(v->get_id()));
-        ui->votes_list->addItem(item);
-    }*/
-    //progressDialog = d;
+void CountDialog::set_count_distribution_info_lbl(QString text)
+{
+    ui->count_distirubution_info_lbl->setText(text);
+}
+
+void CountDialog::set_list()
+{
     int size = count->get_candidates().size();
     for (int y = 0; y < size; y++)
     {
@@ -89,15 +117,6 @@ void CountDialog::set_count_info(Count *c)
     add_info_to_lists(temp, ui->excluded_list);
 
     temp = c->get_candidates();
-    /*QString name = "";
-    for (int i = 0; i < temp.size(); i++)
-    {
-        if (temp[i]->get_status())
-        {
-            name = temp[i]->get_Name();
-            new QListWidgetItem(name, ui->candidates_list);
-        }
-    }*/
     add_info_to_lists(temp, ui->candidates_list);
 
     int number_of_votes = 0;
@@ -169,22 +188,8 @@ void CountDialog::set_candidates(QList<Candidate *> c)
 
 }
 
-/*int CountDialog::get_total_candidate_votes(int j)
-{
-    int total = 0;
-    for (int i = 0; i < counts.size(); i++)
-    {
-        total+= counts[i]->get_candidates().at(j)->getVotes().size();
-    }
-    return total;
-}*/
-
 QList<Vote *> CountDialog::get_total_candidate_vote_objects(int j)
 {
-    /*for (int i = 0; i < counts.size(); i++)
-    {
-        votes.append(counts[i]->get_candidates().at(j)->getVotes());
-    }*/
     QList<Vote *> votes = count->get_candidates().at(j)->get_total_votes();
     return votes;
 }
@@ -201,6 +206,7 @@ void CountDialog::set_distribution_info()
 
 void CountDialog::disable_continue_button()
 {
+    ui->continue_btn->setText("Count Complete!");
     ui->continue_btn->setEnabled(false);
 }
 
@@ -209,14 +215,6 @@ void CountDialog::on_votes_list_itemActivated(QListWidgetItem* item)
     VoteListItem *v1 = static_cast<VoteListItem*>(item);
     ui->vote_route_details_lbl->setText(v1->getRoute());
 }
-
-/*void CountDialog::on_pushButton_clicked()
-{
-    //STV::continue_count();
-    STV *stv;
-    stv->get_instance();
-    stv->continue_count();
-}*/
 
 void CountDialog::display_progress()
 {
@@ -275,30 +273,31 @@ void CountDialog::on_search_by_cand_combo_currentIndexChanged(int index)
 
 void CountDialog::on_search_by_vote_id_rb_clicked()
 {
-    ui->search_by_cand_combo->setEnabled(false);
-    ui->search_by_cand_lbl->setEnabled(false);
+    ui->search_by_cand_combo->setVisible(false);
+    ui->search_by_cand_lbl->setVisible(false);
     ui->search_by_cand_rb->setChecked(false);
 
-    ui->search_by_vote_id_lbl->setEnabled(true);
-    ui->search_by_vote_id_spinbox->setEnabled(true);
-    ui->search_by_vote_id_btn->setEnabled(true);
+    ui->search_by_vote_id_lbl->setVisible(true);
+    ui->search_by_vote_id_spinbox->setVisible(true);
+    ui->search_by_vote_id_btn->setVisible(true);
     //ui->search_by_vote_id_rb->setChecked(false);
 }
 
 void CountDialog::on_search_by_cand_rb_clicked()
 {
-    ui->search_by_vote_id_lbl->setEnabled(false);
-    ui->search_by_vote_id_spinbox->setEnabled(false);
-    ui->search_by_vote_id_btn->setEnabled(false);
+    ui->search_by_vote_id_lbl->setVisible(false);
+    ui->search_by_vote_id_spinbox->setVisible(false);
+    ui->search_by_vote_id_btn->setVisible(false);
     ui->search_by_vote_id_rb->setChecked(false);
 
-    ui->search_by_cand_combo->setEnabled(true);
-    ui->search_by_cand_lbl->setEnabled(true);
+    ui->search_by_cand_combo->setVisible(true);
+    ui->search_by_cand_lbl->setVisible(true);
     //ui->search_by_cand_rb->setChecked(false);
 }
 
 void CountDialog::on_search_by_vote_id_btn_clicked()
 {
+    bool vote_found = false;
     QString id_string = ui->search_by_vote_id_spinbox->text();
     if (id_string != "" && id_string != "0")
     {
@@ -313,6 +312,7 @@ void CountDialog::on_search_by_vote_id_btn_clicked()
                 Vote *v = votes[j];
                 if (v->get_id() == id)
                 {
+                    vote_found = true;
                     ui->votes_list->clear();
                     VoteListItem *item = new VoteListItem(v);
                     item->setText(QString::number(v->get_id()));
@@ -327,18 +327,34 @@ void CountDialog::on_search_by_vote_id_btn_clicked()
             Vote *v = nonTs[i];
             if (v->get_id() == id)
             {
+                vote_found = true;
                 ui->votes_list->clear();
                 VoteListItem *item = new VoteListItem(v);
                 item->setText(QString::number(v->get_id()));
                 ui->votes_list->addItem(item);
             }
         }
+        if (ui->votes_list->count() == 0)
+        {
+            vote_found = false;
+        }
     }
-    else
+    if (!vote_found)
     {
         QMessageBox box;
         box.setText("Invalid vote id");
         box.exec();
     }
+
+}
+
+void CountDialog::enable_final_results_button()
+{
+    ui->final_results_btn->setEnabled(true);
+}
+
+void CountDialog::on_final_results_btn_clicked()
+{
+    ResultsForm *rf = new ResultsForm();
 
 }

@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     trackvote.cpp \
     stv.cpp \
     count.cpp \
-    writetologfile.cpp
+    writetologfile.cpp \
+    resultsform.cpp
 
 HEADERS  += mainwindow.h \
     validate.h \
@@ -35,7 +36,9 @@ HEADERS  += mainwindow.h \
     trackvote.h \
     stv.h \
     count.h \
-    writetologfile.h
+    writetologfile.h \
+    resultsform.h
 
 FORMS    += mainwindow.ui \
-    countdialog.ui
+    countdialog.ui \
+    resultsform.ui
