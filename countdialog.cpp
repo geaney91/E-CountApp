@@ -213,7 +213,8 @@ void CountDialog::disable_continue_button()
 void CountDialog::on_votes_list_itemActivated(QListWidgetItem* item)
 {
     VoteListItem *v1 = static_cast<VoteListItem*>(item);
-    ui->vote_route_details_lbl->setText(v1->getRoute());
+    //ui->vote_route_details_lbl->setText(v1->getRoute());
+    ui->textEdit->setText(v1->getRoute());
 }
 
 void CountDialog::display_progress()

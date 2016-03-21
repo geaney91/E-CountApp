@@ -11,6 +11,7 @@ public:
     Candidate(int id, QString n, QString p);
     QList<QList<Vote *>> get_VotesPerCount();
     QList<Vote *> get_votes_for_particular_count(int countNum);
+    QList<Vote *> get_votes_up_to_particular_count(int countNum);
     QList<Vote *> get_total_votes();
     //QList<Vote *> getVotes();
     QString get_Name();

@@ -20,9 +20,10 @@ public:
     void pop_dialog();
     void close_dialog();
 
+
 private slots:
     void on_chooseFileBtn_clicked();
-
+    void update_bar();
     void on_countBtn_clicked();
     void start_bar();
     void stop_bar();
@@ -31,6 +32,10 @@ private:
     Ui::MainWindow *ui;
     FileWork *fileWork;
     STV *stv;
+
+    QTimer *t;
+    int counter;
+    int checked;
     QProgressBar bar;
     //QProgressDialog *d;
 };

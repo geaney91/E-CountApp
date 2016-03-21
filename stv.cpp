@@ -70,15 +70,16 @@ void STV::create_valid_votes()
         //dialog->setValue(i);
         QString l = valids[i];
         QStringList prefs = l.split(",");
-        QList<QPair<int, bool>> preferences;
+        //*****QList<QPair<int, bool>> preferences;****
+        QList<int> preferences;
         foreach (QString pref, prefs)
         {
             if (pref == "")
             {
-                preferences.append(qMakePair(0, false));
+                preferences.append(/*qMakePair(0, false)*/0);
             }
             else
-                preferences.append(qMakePair(pref.toInt(), false));
+                preferences.append(/*qMakePair(pref.toInt(), false)*/pref.toInt());
         }
         validVotes.append(new Vote(i+1, "", preferences));
     }
@@ -110,20 +111,18 @@ void STV::distribute_first_preferences()
     QVector<QList<Vote *>> lists (size);
     for (int i = 0; i < validVotes.size(); i++)
     {
-        //dialog->setValue(valids.size()+i);
         Vote *v = validVotes[i];
-        //QStringList l = v->get_preferences();
-        QList<QPair<int, bool>> l = v->get_preferences();
-        //int size = l.size();
+        //****QList<QPair<int, bool>> l = v->get_preferences();***
+        QList<int> l = v->get_preferences();
         for (int j = 0; j < size; j++)
         {
-            if (l[j].first == 1 && !l[j].second/* && candidates[j]->get_status() == 0*/)
+            //if (l[j].first == 1/* && !l[j].second*/)
+            if (l[j] == 1)
             {                
-                //candidates[j]->increment_votes(countNumber-1, v);
                 lists[j].append(v);
                 v->set_route(TrackVote::add_assignment_route_string(candidates[j]));
                 v->set_transferable_to(candidates[j]->get_id());
-                l[j].second = true;
+                //l[j].second = true;
                 break;
             }
         }
@@ -133,35 +132,28 @@ void STV::distribute_first_preferences()
     {
         candidates[i]->set_votes(lists[i]);
     }
-    //dialog->setValue(valids.size()*2);
-    //active = candidates;
 }
 
 void STV::check_for_elected()
 {
     bool check = false;
-    //if (check_if_should_continue())
-    //{
-        for (int i = 0; i < size && elected.size() < seats; i++)
+    for (int i = 0; i < size && elected.size() < seats; i++)
+    {
+        if (candidates[i]->get_status() == 0)
         {
-            if (candidates[i]->get_status() == 0)
+            int total = candidates[i]->get_total_votes().size();
+            if (total >= quota)
             {
-                int total = candidates[i]->get_total_votes().size();
-                if (total >= quota)
-                {
-                    check = true;
-                    elected.append(candidates[i]);
-                    textForLogFile += candidates[i]->get_Name() + " elected\n";
-                    //active.removeAt(i);
-                    candidates[i]->set_status(1);
-                    int surplus = total - quota;
-                    candidates[i]->set_surplus(surplus);
-                }
+                check = true;
+                elected.append(candidates[i]);
+                textForLogFile += candidates[i]->get_Name() + " elected\n";
+                //active.removeAt(i);
+                candidates[i]->set_status(1);
+                int surplus = total - quota;
+                candidates[i]->set_surplus(surplus);
             }
         }
-    //}
-    //else
-    //    count_complete();
+    }
     if (elected.size() == seats)
     {
         count_complete();
@@ -181,9 +173,6 @@ void STV::display_count_info()
         countDialog->show();
         //dialog->close();
     }
-    //clear_candidates_votes();
-    //check_for_elected();
-    //continue_count();
 }
 
 void STV::continue_count()
@@ -193,12 +182,12 @@ void STV::continue_count()
     QVector<int> next_preferences (size);
     transferableVotes.clear();
     countNumber++;
-    textForLogFile += "\nCount " + QString::number(countNumber) + "\n";
     bool check = true;
     int count = 0;
 
     if (check_if_should_continue())
     {
+        textForLogFile += "\nCount " + QString::number(countNumber) + "\n";
         countDialog->reset_ui();
         if(elected.size() > 0)
         {
@@ -209,12 +198,8 @@ void STV::continue_count()
                     count++;
                 }
             }
-            if (countNumber == 3)
-            {
-                check = false;
-            }
             int surplus_to_distribute = check_if_meets_criteria(count, next_preferences);
-            if (surplus_to_distribute != 100)
+            if (surplus_to_distribute != -1)
             {
                 textForLogFile += "Distribution of " + candidates[surplus_to_distribute]->get_Name() + "'s surplus\n";
                 surplus_distribution(candidates[surplus_to_distribute], next_preferences);
@@ -262,7 +247,7 @@ bool STV::check_if_should_continue()
 
         else if ((continuing_cands.size() == ((seats - elected.size())+1)))
         {
-            int index = 0;
+            //int index = 0;
             QList<Candidate *> cands = continuing_cands;
             for (int i = 0; i < continuing_cands.size()-1; i++)
             {
@@ -334,7 +319,7 @@ bool STV::check_if_should_continue()
 int STV::check_if_meets_criteria(const int &count, QVector<int> &next_preferences)
 {   
     //QVector<int> next_preferences (size);
-    int distributable_candidate = 100;
+    int distributable_candidate = -1;
     bool met = false;
     bool check = true;
     Candidate *c;
@@ -342,7 +327,7 @@ int STV::check_if_meets_criteria(const int &count, QVector<int> &next_preference
     //QList<Vote *> electeds_votes;
     if (count == 0)
     {
-        distributable_candidate = 100;
+        distributable_candidate = -1;
     }
     else if (count == 1)
     {
@@ -358,6 +343,7 @@ int STV::check_if_meets_criteria(const int &count, QVector<int> &next_preference
             bool q = false;
             Vote *v = electeds_votes[i];
             int transfer_to = v->get_transferable_to();
+            int j = (v->get_preferences().at(transfer_to-1))+1;
             /*if (countNumber > 2)
             {
                 for (int i = 0; i < size; i++)
@@ -372,7 +358,7 @@ int STV::check_if_meets_criteria(const int &count, QVector<int> &next_preference
                 }
             }
             else*/
-                separating_transferable_nonTransferable(2, v, q, transfer_to);
+                separating_transferable_nonTransferable(j, v, q/*, transfer_to*/);
         }
         //QVector<int> type = check_surplus_type(c);
         int surplus = c->get_surplus();
@@ -384,37 +370,18 @@ int STV::check_if_meets_criteria(const int &count, QVector<int> &next_preference
     {
         int ind = 0;
         ind  = more_than_one_surplus(candidates_with_surpluses, c, next_preferences);
-        if (ind != 100)
+        if (ind != -1)
             distributable_candidate = ind;
     }
 
     return distributable_candidate;
 }
 
-void STV::one_surplus(QList<Vote *> &electeds_votes, int &surplus, Candidate *c)
-{
-    /*for (int i = 0; i < elected.size(); i++)
-    {
-        if(elected[i]->get_surplus() > 0)
-            c = elected[i];
-    }
-    electeds_votes = c->get_votes_for_particular_count(c->index_of_count_candidate_was_elected_in());
-    for (int i = 0; i < electeds_votes.size(); i++)
-    {
-        Vote *v = electeds_votes[i];
-        int j = countNumber;
-        separating_transferable_nonTransferable(j, v);
-    }
-    //QVector<int> type = check_surplus_type(c);
-    surplus = c->get_surplus();
-    //QList<Vote *> count_where_surplus_arose_votes = c->get_votes_for_particular_count(countNumber-2);*/
-}
-
 int STV::more_than_one_surplus(QList<Candidate *> candidates_with_surpluses, Candidate *c, QVector<int> &next_preferences)
 {
     int index = 0;
     bool check = true;
-    int index_to_distribute = 100;
+    int index_to_distribute = -1;
     for (int i = 0; i < elected.size(); i++)
     {
         if (elected[i]->get_surplus() > 0)
@@ -452,78 +419,47 @@ int STV::more_than_one_surplus(QList<Candidate *> candidates_with_surpluses, Can
 
     if (number_of_equals > 1)
     {
-        index_to_distribute = equal_surpluses(candidates_with_surpluses);
+        c = candidates_with_surpluses[equal_surpluses(candidates_with_surpluses)];
     }
     else
     {
         c = candidates_with_surpluses[0];
-        QList<Vote *> electeds_votes = c->get_votes_for_particular_count(c->index_of_count_candidate_was_elected_in());
+    }
+
+    QList<Vote *> electeds_votes = c->get_votes_for_particular_count(c->index_of_count_candidate_was_elected_in());
+    for (int i = 0; i < electeds_votes.size(); i++)
+    {
+        bool q = false;
+        Vote *v = electeds_votes[i];
+        int transfer_to = v->get_transferable_to();
+        int j = (v->get_preferences().at(transfer_to-1))+1;
+        separating_transferable_nonTransferable(j, v, q/*, transfer_to*/);
+    }
+    int surplus = c->get_surplus();
+    check_surplus_type(surplus, electeds_votes, next_preferences);
+    index_to_distribute = check_criteria(c, next_preferences);
+    if (index_to_distribute == -1)
+    {
+        transferableVotes.clear();
+        electeds_votes.clear();
+        surplus  = 0;
+        for (int i = 0; i < size1; i++)
+        {
+            electeds_votes.append(candidates_with_surpluses[i]->get_votes_for_particular_count(c->index_of_count_candidate_was_elected_in()));
+            surplus += candidates_with_surpluses[i]->get_surplus();
+        }
         for (int i = 0; i < electeds_votes.size(); i++)
         {
             bool q = false;
             Vote *v = electeds_votes[i];
             int transfer_to = v->get_transferable_to();
-            /*if (countNumber > 2)
-            {
-                for (int i = 0; i < size; i++)
-                {
-                    if (candidates[i]->get_id() == transfer_to && candidates[i]->get_status() == 0)
-                    {
-                        transferableVotes.append(v);
-                        break;
-                    }
-                    else
-                        separating_transferable_nonTransferable(1, v, q, transfer_to);
-                }
-            }
-            else*/
-                separating_transferable_nonTransferable(2, v, q, transfer_to);
+            int j = (v->get_preferences().at(transfer_to-1))+1;
+            separating_transferable_nonTransferable(j, v, q/*, transfer_to*/);
         }
         //QVector<int> type = check_surplus_type(c);
-        if (countNumber == 3)
-        {
-            check = false;
-        }
-        int surplus = c->get_surplus();
-        check_surplus_type(surplus, electeds_votes, next_preferences);
-        index_to_distribute = check_criteria(c, next_preferences);
-        if (index_to_distribute == 100)
-        {
-            transferableVotes.clear();
-            electeds_votes.clear();
-            surplus  = 0;
-            for (int i = 0; i < size1; i++)
-            {
-                electeds_votes.append(candidates_with_surpluses[i]->get_votes_for_particular_count(c->index_of_count_candidate_was_elected_in()));
-                surplus += candidates_with_surpluses[i]->get_surplus();
-            }
-            for (int i = 0; i < electeds_votes.size(); i++)
-            {
-                bool q = false;
-                Vote *v = electeds_votes[i];
-                int transfer_to = v->get_transferable_to();
-                /*if (countNumber > 2)
-                {
-                    for (int i = 0; i < size; i++)
-                    {
-                        if (candidates[i]->get_id() == transfer_to && candidates[i]->get_status() == 0)
-                        {
-                            transferableVotes.append(v);
-                            break;
-                        }
-                        else
-                            separating_transferable_nonTransferable(1, v, q, transfer_to);
-                    }
-                }
-                else*/
-                    separating_transferable_nonTransferable(2, v, q, transfer_to);
-
-            }
-            //QVector<int> type = check_surplus_type(c);
-            QVector<int> next_preferences_for_all (size);
-            check_surplus_type(surplus, electeds_votes, next_preferences_for_all);
-            index_to_distribute = check_criteria(c, next_preferences_for_all);
-        }
+        QVector<int> next_preferences_for_all (size);
+        check_surplus_type(surplus, electeds_votes, next_preferences_for_all);
+        index_to_distribute = check_criteria(c, next_preferences_for_all);
     }
 
     return index_to_distribute;
@@ -531,7 +467,7 @@ int STV::more_than_one_surplus(QList<Candidate *> candidates_with_surpluses, Can
 
 int STV::equal_surpluses(QList<Candidate *> &candidates_with_surpluses)
 {
-    int index_to_distribute = 100;
+    int index_of_surplus_to_distribute = -1;
 
     QList<int> counts_surpluses_occured_in;
     QList<int> earliest_surpluses_indices;
@@ -541,14 +477,14 @@ int STV::equal_surpluses(QList<Candidate *> &candidates_with_surpluses)
     }
 
     int index = 0;
-    earliest_surpluses_indices.append(index);
+    earliest_surpluses_indices.append(0);
     for (int i = 1; i < counts_surpluses_occured_in.size(); i++)
     {
-        if (counts_surpluses_occured_in[i] < counts_surpluses_occured_in[index])
+        if (counts_surpluses_occured_in[i] < counts_surpluses_occured_in[0])
         {
-            earliest_surpluses_indices[index] = i;
+            earliest_surpluses_indices[0] = i;
         }
-        else if (counts_surpluses_occured_in[i] == counts_surpluses_occured_in[index])
+        else if (counts_surpluses_occured_in[i] == counts_surpluses_occured_in[0])
         {
             earliest_surpluses_indices.append(i);
         }
@@ -556,7 +492,7 @@ int STV::equal_surpluses(QList<Candidate *> &candidates_with_surpluses)
 
     if (earliest_surpluses_indices.size() == 1)
     {
-        index_to_distribute = earliest_surpluses_indices[0];
+        index_of_surplus_to_distribute = earliest_surpluses_indices[0];
     }
     else
     {
@@ -564,31 +500,73 @@ int STV::equal_surpluses(QList<Candidate *> &candidates_with_surpluses)
         indices.append(earliest_surpluses_indices[0]);//->get_votes_for_particular_count(0).size());
         for (int i = 1; i < earliest_surpluses_indices.size(); i++)
         {
-            if (candidates[earliest_surpluses_indices[i]]->get_votes_for_particular_count(0).size() > indices[0])
+            if (candidates[earliest_surpluses_indices[i]]->get_votes_for_particular_count(0).size() >
+                    candidates[indices[0]]->get_votes_for_particular_count(0).size())
             {
                 indices[0] = earliest_surpluses_indices[i];//->get_votes_for_particular_count(0).size();
             }
-            else if (candidates[earliest_surpluses_indices[i]]->get_votes_for_particular_count(0).size() == indices[0])
+            else if (candidates[earliest_surpluses_indices[i]]->get_votes_for_particular_count(0).size() ==
+                     candidates[indices[0]]->get_votes_for_particular_count(0).size())
             {
                 indices.append(earliest_surpluses_indices[i]);//->get_votes_for_particular_count(0).size());
             }
         }
         if (indices.size() == 1)
         {
-            index_to_distribute = indices[0];
+            index_of_surplus_to_distribute = indices[0];
         }
         else
         {
-
+            QList<int> highest_at_any_count_votes;
+            int count_num = candidates[indices[0]]->get_VotesPerCount().size();
+            for (int i = 1; i < indices.size(); i++)
+            {
+                if (candidates[indices[i]]->get_VotesPerCount().size() <
+                        count_num)
+                {
+                    count_num = candidates[indices[i]]->get_VotesPerCount().size();
+                }
+            }
+            highest_at_any_count_votes.append(indices[0]);
+            bool highest_found = false;
+            for (int i = 1; i < count_num; i++)
+            {
+                for (int j = 1; j < indices.size(); j++)
+                {
+                    if (candidates[indices[j]]->get_votes_for_particular_count(i).size() >
+                            candidates[indices[0]]->get_votes_for_particular_count(i).size())
+                    {
+                        highest_at_any_count_votes[0] = indices[j];
+                    }
+                    else if (candidates[indices[j]]->get_votes_for_particular_count(i).size() ==
+                             candidates[indices[0]]->get_votes_for_particular_count(i).size())
+                    {
+                        highest_at_any_count_votes.append(indices[j]);
+                    }
+                }
+                if (highest_at_any_count_votes.size() == 1)
+                {
+                    highest_found = true;
+                    break;
+                }
+            }
+            if (highest_found)
+            {
+                index_of_surplus_to_distribute = highest_at_any_count_votes[0];
+            }
+            else
+            {
+                index_of_surplus_to_distribute = drawing_lots(highest_at_any_count_votes);
+            }
         }
     }
 
-    return index_to_distribute;
+    return index_of_surplus_to_distribute;
 }
 
 int STV::check_criteria(Candidate *c, QVector<int> &next_preferences)
 {
-    int surplus_to_distribute = 100;
+    int surplus_to_distribute = -1;
     int index = 0;
     for (int i = 0; i < size; i++)
     {
@@ -638,9 +616,6 @@ void STV::check_surplus_type(const int &surplus, QList<Vote *> votes, QVector<in
 
 void STV::transferables_greater_than_surplus(const int &surplus, QList<Vote *> votes, QVector<int> &next_preferences)
 {
-    bool check  = false;
-    if (countNumber == 3)
-        check = true;
     float surplusf = surplus;
     float transferables = transferableVotes.size();
     float ratio = surplusf/transferables;
@@ -753,7 +728,7 @@ void STV::total_greater_than_surplus(const QList<int> &equal_fractions,
     }
     else
     {
-        fractions(1, lowest, equal_fractions, a);
+        sorting_equal_fractions(1, lowest, equal_fractions, a);
     }
 
     amounts_with_ratio[lowest] -= 1.0;
@@ -785,12 +760,12 @@ void STV::total_less_than_surplus(const QList<int> &equal_fractions, int highest
     }
     else
     {
-        fractions(2, highest, equal_fractions, a);
+        sorting_equal_fractions(2, highest, equal_fractions, a);
     }
     amounts_with_ratio[highest] += 1.0;
 }
 
-void STV::fractions(int type, int &t, const QList<int> &equal_fractions, const QVector<int> &a)
+void STV::sorting_equal_fractions(int type, int &t, const QList<int> &equal_fractions, const QVector<int> &a)
 {
     if (type == 1)
     {
@@ -1084,7 +1059,8 @@ void STV::surplus_distribution(Candidate *c,const QVector<int> &next_preferences
     //QVector<QList<Vote *>> transfers (size);
     QList<Vote *> transfers;
     QVector<QList<Vote *>> lists (size);
-    QList<QPair<int, bool>> list;
+    //*****QList<QPair<int, bool>> list;*****
+    QList<int> list;
     int check = 0;
     /*for (int i = 0; i < next_preferences.size(); i++)
     {
@@ -1116,9 +1092,9 @@ void STV::surplus_distribution(Candidate *c,const QVector<int> &next_preferences
         int transfer_to = v->get_transferable_to();
         if (transfer_to != 0 && candidates[transfer_to-1]->get_status() == 0 && temp[transfer_to-1] != 0)
         {
-            list = v->get_preferences();
+            /***list = v->get_preferences();
             list[transfer_to-1].second = true;
-            v->set_preferences(list);
+            v->set_preferences(list);****/
             v->set_route(TrackVote::add_transferred_in_surplus_route_string(candidates[transfer_to-1]));
             lists[transfer_to-1].append(v);
             votes.removeAt(k);
@@ -1141,7 +1117,8 @@ void STV::surplus_distribution(Candidate *c,const QVector<int> &next_preferences
         int met = 0;
         for (int i = 0; i < votes.size() && met < difference; i++)
         {
-            if (votes[i]->get_transferable_to() == 0)
+            int transfer_to = votes[i]->get_transferable_to();
+            if (transfer_to == 0 || candidates[transfer_to-1]->get_status() != 0)
             {
                 votes[i]->set_route(TrackVote::add_non_transferable_route_string(countNumber));
                 nonTransferableVotesNotEffective.append(votes[i]);
@@ -1213,7 +1190,8 @@ void STV::defining_candidates_for_exclusion()
         }
         else if (i == 1 && !check)
         {
-            if (num_of_votes[0] == num_of_votes[1])
+            check = true;
+            if (num_of_votes[0]->get_total_votes().size() == num_of_votes[1]->get_total_votes().size())
             {
                 equal_lowest_candidates(num_of_votes, exclusions);
             }
@@ -1275,13 +1253,13 @@ void STV::equal_lowest_candidates(const QList<Candidate *> &num_of_votes, QList<
         {
             for (int j = 1; j < lowest_original_votes.size(); j++)
             {
-                if (lowest_original_votes[j]->get_votes_for_particular_count(i).size() <
-                        lowest_at_any_count_votes[0]->get_votes_for_particular_count(i).size())
+                if (lowest_original_votes[j]->get_votes_up_to_particular_count(i).size() <
+                        lowest_at_any_count_votes[0]->get_votes_up_to_particular_count(i).size())
                 {
                     lowest_at_any_count_votes[0] = lowest_original_votes[j];
                 }
-                else if (lowest_original_votes[j]->get_votes_for_particular_count(i).size() ==
-                         lowest_at_any_count_votes[0]->get_votes_for_particular_count(i).size())
+                else if (lowest_original_votes[j]->get_votes_up_to_particular_count(i).size() ==
+                         lowest_at_any_count_votes[0]->get_votes_up_to_particular_count(i).size())
                 {
                     lowest_at_any_count_votes.append(lowest_original_votes[j]);
                 }
@@ -1368,7 +1346,7 @@ void STV::excluding_candidates(QList<Candidate *> exclusions)
 
 void STV::distribute_excluded_votes(const int &j, QVector<QList<Vote *>> &lists)
 {
-    textForLogFile += ("%s excluded\n", candidates[j]->get_Name());
+    textForLogFile += candidates[j]->get_Name() + " excluded\n";
     bool check = false;
     //QVector<QList<Vote *>> lists (size);
     int votes_size = candidates[j]->get_total_votes().size();
@@ -1378,12 +1356,15 @@ void STV::distribute_excluded_votes(const int &j, QVector<QList<Vote *>> &lists)
         bool q = false;
         Vote *v = candidates[j]->get_total_votes().at(i);
         int transfer_to = v->get_transferable_to();
-        separating_transferable_nonTransferable(2, v, q, transfer_to);
+        int j = (v->get_preferences().at(transfer_to-1))+1;
+        separating_transferable_nonTransferable(j, v, q/*, transfer_to*/);
     }
     //clear_candidates_votes();
     for (int i = 0; i < votes_size; i++)
     {
         Vote *v = candidates[j]->get_total_votes().at(i);
+        if (v->get_id() == 12994)
+            check = true;
         int transfer_to = v->get_transferable_to();
         if (transfer_to != 0 && candidates[transfer_to-1]->get_status() == 0)
         {
@@ -1392,7 +1373,7 @@ void STV::distribute_excluded_votes(const int &j, QVector<QList<Vote *>> &lists)
         }
         else
         {
-            //if (countNumber == 5)
+            //if (countNumber == 3)
             //{
             //    check = true;
             //}
@@ -1413,35 +1394,29 @@ void STV::distribute_excluded_votes(const int &j, QVector<QList<Vote *>> &lists)
     //candidates[j]->clear_votes();
 }
 
-bool STV::separating_transferable_nonTransferable(int j, Vote *v, bool q, int transfer_to)
+bool STV::separating_transferable_nonTransferable(int j, Vote *v, bool q/*, int transfer_to*/)
 {
 
-    QList<QPair<int, bool>> list = v->get_preferences();
-    //int size1 = list.size();
+    //QList<QPair<int, bool>> list = v->get_preferences();
+    QList<int> list = v->get_preferences();
     bool t = false;
     bool check = false;
-    //if (v->get_id() == 2 && countNumber == 5)
-    //{
-    //    t = true;
-    //}
     for (int i = 0; i < size; i++)
     {
-        if ((list[i].first == j) && !list[i].second/* && candidates[i]->get_status() == 0*/)
+        //if ((list[i].first == j) && !list[i].second)
+        if (list[i] == j)
         {
             if (candidates[i]->get_status() == 0)
             {
                 check = true;
                 q = true;
                 v->set_transferable_to(candidates[i]->get_id());
-                //list[i].second = true;
                 break;
             }
             else
             {
-                //list[i].second = true;
-
                 j++;
-                if (separating_transferable_nonTransferable(j, v, q, transfer_to))
+                if (separating_transferable_nonTransferable(j, v, q/*, transfer_to*/))
                 {
                     check = false;
                     q = true;
@@ -1450,7 +1425,7 @@ bool STV::separating_transferable_nonTransferable(int j, Vote *v, bool q, int tr
             }
 
         }
-        else if ((list[i].first == j) && list[i].second/* && candidates[i]->get_status() == 0*/)
+        /*else if ((list[i].first == j) && list[i].second)
         {
             j++;
             if (separating_transferable_nonTransferable(j, v, q, transfer_to))
@@ -1459,7 +1434,7 @@ bool STV::separating_transferable_nonTransferable(int j, Vote *v, bool q, int tr
                 q = true;
                 break;
             }
-        }
+        }*/
     }
     if (check)
     {
@@ -1467,12 +1442,6 @@ bool STV::separating_transferable_nonTransferable(int j, Vote *v, bool q, int tr
         v->set_preferences(list);
         q = true;
     }
-    //else
-    //{
-    //    v->set_transferable(false);
-    //    v->set_transferable_to(0);
-    //nonTransferableVotesNotEffective.append(v);
-    //}
 
     return q;
 }
@@ -1510,15 +1479,17 @@ QList<QList<Vote *>> STV::finding_next_valid_preference(int j, QList<Vote *> vot
 int STV::distributing_by_next_valid_preference(int j, Vote *v, const int &distribution_type)
 {
     int i = 100;
-    QList<QPair<int, bool>> list = v->get_preferences();
+    //*****QList<QPair<int, bool>> list = v->get_preferences();****
+    QList<int> list = v->get_preferences();
     int size1 = list.size();
     bool check = false;
     for (i = 0; i < size1; i++)
     {
-        if ((list[i].first == j) && !list[i].second && candidates[i]->get_status() == 0)
+        //if ((list[i].first == j) && !list[i].second && candidates[i]->get_status() == 0)
+        if (list[i] == j && candidates[i]->get_status() == 0)
         {
             check = true;
-            list[i].second = true;
+            //****list[i].second = true;*****
             //candidates[i]->increment_votes(countNumber-1, v);
             if (distribution_type == 1)
             {
@@ -1533,11 +1504,11 @@ int STV::distributing_by_next_valid_preference(int j, Vote *v, const int &distri
             //candidates[i]->getVotesPerCount().at(countNumber-1).append(v);
             //c->getVotesPerCount().at(countNumber-1).remove
         }
-        else if (list[i].first == j && list[i].second && candidates[i]->get_status())
+        /*****else if (list[i].first == j && list[i].second && candidates[i]->get_status())
         {
             j++;
             distributing_by_next_valid_preference(j, v, distribution_type);
-        }
+        }******/
     }
     //v->set_preferences(list);
     if (!check)
@@ -1586,8 +1557,6 @@ void STV::count_complete()
     {
         countDialog->show();
     }
-    //QMessageBox box("Count Complete", "CountComplete", countDialog);
-    //box.show();
 }
 
 int STV::drawing_lots(QList<int> list)

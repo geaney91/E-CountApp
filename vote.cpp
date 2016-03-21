@@ -16,7 +16,7 @@ Vote::~Vote()
     *ptr = *obj.ptr;
 }*/
 
-Vote::Vote(int id, QString route, QList<QPair<int, bool>> preferences/*QStringList preferences*/)
+Vote::Vote(int id, QString route, QList<int> preferences/*QStringList preferences*/)
 {
     this->id = id;
     this->route = route;
@@ -40,12 +40,12 @@ void Vote::set_route(QString r)
     route += r;
 }
 
-QList<QPair<int, bool>> Vote::get_preferences()
+QList<int> Vote::get_preferences()
 {
     return preferences;
 }
 
-void Vote::set_preferences(QList<QPair<int, bool> > prefs)
+void Vote::set_preferences(QList<int> prefs)
 {
     preferences = prefs;
 }

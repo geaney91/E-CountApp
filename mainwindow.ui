@@ -184,8 +184,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>220</y>
+      <x>250</x>
+      <y>130</y>
       <width>131</width>
       <height>20</height>
      </rect>
@@ -214,6 +214,19 @@
     </property>
     <property name="text">
      <string>Check to run application straight through</string>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>230</y>
+      <width>118</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>24</number>
     </property>
    </widget>
   </widget>

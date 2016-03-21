@@ -46,6 +46,16 @@ QList<Vote *> Candidate::get_votes_for_particular_count(int countNum)
     return votesPerCount[countNum];
 }
 
+QList<Vote *> Candidate::get_votes_up_to_particular_count(int countNum)
+{
+    QList<Vote *> temp;
+    for (int i = 0; i <= countNum; i++)
+    {
+        temp.append(votesPerCount[i]);
+    }
+    return temp;
+}
+
 QList<Vote *> Candidate::get_total_votes()
 {
     QList<Vote *> votes;
