@@ -2,9 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "filework.h"
-#include "stv.h"
 #include <QProgressBar>
+#include "filework.h"
+//#include "stv.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +24,8 @@ public:
 private slots:
     void on_chooseFileBtn_clicked();
     void update_bar();
+    void on_value_changed();
+    void on_timeout();
     void on_countBtn_clicked();
     void start_bar();
     void stop_bar();
@@ -31,13 +33,11 @@ private slots:
 private:
     Ui::MainWindow *ui;
     FileWork *fileWork;
-    STV *stv;
 
     QTimer *t;
     int counter;
     int checked;
-    QProgressBar bar;
-    //QProgressDialog *d;
+    QTimer *timer;
 };
 
 #endif // MAINWINDOW_H

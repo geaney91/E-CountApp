@@ -2,11 +2,12 @@
 #define COUNTDIALOG_H
 
 #include <QDialog>
+#include <QListWidget>
+//#include <QProgressDialog>
 #include "candidate.h"
 #include "vote.h"
 #include "count.h"
-#include <QListWidget>
-#include <QProgressDialog>
+#include "resultsform.h"
 
 namespace Ui {
 class CountDialog;
@@ -24,29 +25,27 @@ public:
     void set_list();
     void display_non_transferable_votes();
     void set_static_count_info(int total, int valid, int invalid, int quota, int seats);
-    void set_count_info(Count *c);
-    void set_votes_changes(const QList<Candidate *> temp);
+    void set_count_info();
+    void set_votes_changes(const QList<Candidate *> &temp);
     void add_info_to_lists(QList<Candidate *> c, QListWidget *lw);
     void set_candidates(QList<Candidate *> c);
     void set_non_transferable_not_effectives(QList<Vote *> v);
     void set_distribution_info();
     void disable_continue_button();
     QPushButton *get_button();
-    void display_progress();
-    //int get_total_candidate_votes(int j);
+
     QList<Vote *> get_total_candidate_vote_objects(int j);
     void populate_combo_box();
     void enable_final_results_button();
+    void add_to_results_form();
 
-    //void pop_dialog();
-    //void close_dialog();
-
-//signals:
-//    void on_pushButton_clicked();
+    void results_form_static_info(int total, int valid, int invalid, int quota, int seats);
+    void results_form_set_votes_changes();
+    void results_form_set_form();
+    void set_count_object(Count *c);
 
 private slots:
     void on_votes_list_itemActivated(QListWidgetItem *item);
-    //void on_pushButton_clicked();
 
     void on_search_by_cand_combo_currentIndexChanged(int index);
 
@@ -58,14 +57,17 @@ private slots:
 
     void on_final_results_btn_clicked();
 
+    void on_continue_btn_clicked();
+
 public slots:
     void reset_ui();
 
 private:
     Ui::CountDialog *ui;
-    //QList<Count *> counts;
+    ResultsForm *rf;
     Count *count;
-    QProgressDialog *progressDialog;
+    QList<Count *> counts;
+    QStringList changes;
 };
 
 #endif // COUNTDIALOG_H

@@ -1,7 +1,6 @@
 #ifndef COUNT_H
 #define COUNT_H
 
-#include <QMainWindow>
 #include "candidate.h"
 #include "vote.h"
 
@@ -10,8 +9,9 @@ class Count
 public:
     Count();
     Count(QList<Candidate *> c, QList<Candidate *> elec, QList<Candidate *> excl, QList<Vote *> v,
-          QList<Vote *> ntv, int countNum, QString distribInfo);
+          QList<Vote *> ntv, int countNum, QString distribInfo, int s);
 
+    int get_seats();
     QList<Candidate *> get_candidates();
     QList<Candidate *> get_elected();
     QList<Candidate *> get_excluded();

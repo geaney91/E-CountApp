@@ -1,9 +1,9 @@
 #include "countdialog.h"
 #include "ui_countdialog.h"
-#include "stv.h"
 #include "votelistitem.h"
-#include "resultsform.h"
+//#include "resultsform.h"
 #include <QProgressDialog>
+#include <QMessageBox>
 #include <QScrollBar>
 
 CountDialog::CountDialog(QWidget *parent) :
@@ -11,8 +11,10 @@ CountDialog::CountDialog(QWidget *parent) :
     ui(new Ui::CountDialog)
 {
     ui->setupUi(this);
+    ui->progressBar->hide();
+    rf = new ResultsForm();
     //if (checked == 0)
-        //connect(ui->continue_btn, &QPushButton::clicked, this, &STV::continue_count);
+    //    connect(ui->continue_btn, &QPushButton::clicked, stv, &STV::continue_count);
     ui->search_by_vote_id_lbl->setVisible(false);
     ui->search_by_vote_id_spinbox->setVisible(false);
     ui->search_by_vote_id_btn->setVisible(false);
@@ -66,32 +68,38 @@ void CountDialog::set_count_distribution_info_lbl(QString text)
 void CountDialog::set_list()
 {
     int size = count->get_candidates().size();
+    QList<Vote *> votes;
+    int votes_size = 0;
+    Vote *v;
+    VoteListItem *item;
     for (int y = 0; y < size; y++)
     {
-        QList<Vote *> votes = count->get_candidates().at(y)->get_total_votes();
-        for (int j = votes.size()-1; j >= 0; j--)
+        votes = count->get_candidates().at(y)->get_total_votes();
+        votes_size = votes.size();
+        for (int j = votes_size-1; j >= 0; j--)
         {
-            //dialog->setValue(j);
-            Vote *v = votes[j];
-            VoteListItem *item = new VoteListItem(v);
+            v = votes[j];
+            item = new VoteListItem(v);
             item->setText(QString::number(v->get_id()));
             ui->votes_list->addItem(item);
         }
     }
     display_non_transferable_votes();
-    //dialog->setValue(100000);
 }
 
 void CountDialog::display_non_transferable_votes()
 {
     QList<Vote *> nonTs = count->get_nonTransferable_votes_not_effective();
     int nonTs_size = nonTs.size();
+    Vote *v;
+    VoteListItem *item;
     for (int i = 0; i < nonTs_size; i++)
     {
-        Vote *v = nonTs[i];
-        VoteListItem *item = new VoteListItem(v);
+        v = nonTs[i];
+        item = new VoteListItem(v);
         item->setText(QString::number(v->get_id()));
         ui->votes_list->addItem(item);
+        //QCoreApplication::processEvents();
     }
 }
 
@@ -102,37 +110,40 @@ void CountDialog::set_static_count_info(int total, int valid, int invalid, int q
     ui->invalid_ballots_lbl2->setText(QString::number(invalid));
     ui->quota_lbl2->setText(QString::number(quota));
     ui->no_of_seats_lbl2->setText(QString::number(seats));
+
+    results_form_static_info(total, valid, invalid, quota, seats);
 }
 
-void CountDialog::set_count_info(Count *c)
+void CountDialog::set_count_object(Count *c)
 {
-    //counts.append(c);
     count = c;
-    ui->results_lbl->setText("Results after Count " + QString::number(c->get_countNumber()));
+}
 
-    QList<Candidate *> temp = c->get_elected();
-    add_info_to_lists(c->get_elected(), ui->elected_list);
+void CountDialog::set_count_info()
+{
+    ui->results_lbl->setText("Results after Count " + QString::number(count->get_countNumber()));
 
-    temp = c->get_excluded();
+    QList<Candidate *> temp = count->get_elected();
+    add_info_to_lists(count->get_elected(), ui->elected_list);
+
+    temp = count->get_excluded();
     add_info_to_lists(temp, ui->excluded_list);
 
-    temp = c->get_candidates();
+    temp = count->get_candidates();
     add_info_to_lists(temp, ui->candidates_list);
 
     int number_of_votes = 0;
-    for (int i = 0; i < temp.size(); i++)
+    int temp_size = temp.size();
+    for (int i = 0; i < temp_size; i++)
     {
-        //number_of_votes = temp[i]->getVotesPerCount()[count->get_countNumber()-1].size();
-            number_of_votes = temp[i]->get_total_votes().size();//get_total_candidate_votes(i);
-            new QListWidgetItem(QString::number(number_of_votes), ui->votes_count_list);
+        number_of_votes = temp[i]->get_total_votes().size();
+        new QListWidgetItem(QString::number(number_of_votes), ui->votes_count_list);
+        //QCoreApplication::processEvents();
     }
-    if (c->get_countNumber() > 1)
-    {
-        //set_votes_changes(temp);
-    }
-    //set_list();
-    set_non_transferable_not_effectives(c->get_nonTransferable_votes_not_effective());
+
+    set_non_transferable_not_effectives(count->get_nonTransferable_votes_not_effective());
     set_distribution_info();
+    results_form_set_form();
 }
 
 void CountDialog::add_info_to_lists(QList<Candidate *> temp, QListWidget *lw)
@@ -143,15 +154,18 @@ void CountDialog::add_info_to_lists(QList<Candidate *> temp, QListWidget *lw)
     {
         name = temp[i]->get_Name();
         new QListWidgetItem(name, lw);
+        //QCoreApplication::processEvents();
     }
+    //QCoreApplication::processEvents();
 }
 
-void CountDialog::set_votes_changes(const QList<Candidate *> temp)
+void CountDialog::set_votes_changes(const QList<Candidate *> &temp)
 {
     QString string = "";
+    QStringList changes1;
     int number_of_votes = 0;
-    //QList<Candidate *> temp = count->get_candidates();
-    for (int i = 0; i < temp.size(); i++)
+    int temp_size = temp.size();
+    for (int i = 0; i < temp_size; i++)
     {
         if (temp[i]->get_status() == 0)
         {
@@ -169,8 +183,7 @@ void CountDialog::set_votes_changes(const QList<Candidate *> temp)
             }
             else
             {
-                //number_of_votes = temp[i]->get_votes_for_particular_count(temp[i]->index_of_count_candidate_was_elected_in()).size();
-                string = "+0";
+                string = "0";
                 new QListWidgetItem(string, ui->vote_changes_list);
             }
         }
@@ -180,7 +193,12 @@ void CountDialog::set_votes_changes(const QList<Candidate *> temp)
             string = "-" + QString::number(number_of_votes);
             new QListWidgetItem(string, ui->vote_changes_list);
         }
+        changes1.append(string);
+        //QCoreApplication::processEvents();
     }
+    //QCoreApplication::processEvents();
+    changes = changes1;
+    results_form_set_votes_changes();
 }
 
 void CountDialog::set_candidates(QList<Candidate *> c)
@@ -213,13 +231,7 @@ void CountDialog::disable_continue_button()
 void CountDialog::on_votes_list_itemActivated(QListWidgetItem* item)
 {
     VoteListItem *v1 = static_cast<VoteListItem*>(item);
-    //ui->vote_route_details_lbl->setText(v1->getRoute());
     ui->textEdit->setText(v1->getRoute());
-}
-
-void CountDialog::display_progress()
-{
-    ui->continue_btn->setText("It works!");
 }
 
 QPushButton* CountDialog::get_button()
@@ -236,40 +248,53 @@ void CountDialog::reset_ui()
     ui->excluded_list->clear();
     ui->vote_changes_list->clear();
     ui->votes_list->clear();
+    ui->search_by_cand_combo->setCurrentIndex(0);
 }
 
 void CountDialog::populate_combo_box()
 {
-    ui->search_by_cand_combo->clear();
-    //ui->search_by_cand_combo->addItem("");
-    for (int i = 0; i < count->get_candidates().size(); i++)
+    ui->search_by_cand_combo->setCurrentIndex(0);
+    ui->search_by_cand_combo->addItem("");
+    int size = count->get_candidates().size();
+    for (int i = 0; i < size; i++)
     {
         ui->search_by_cand_combo->addItem(count->get_candidates().at(i)->get_Name());
+       // QCoreApplication::processEvents();
     }
     QString non_t = "non-transferables";
     ui->search_by_cand_combo->addItem(non_t);
+    //QCoreApplication::processEvents();
 }
 
 void CountDialog::on_search_by_cand_combo_currentIndexChanged(int index)
 {
     ui->votes_list->clear();
-    if (index >= 0 && index < count->get_candidates().size())
+    int size = count->get_candidates().size();
+    QList<Vote *> votes;
+    int votes_size = 0;
+    QCoreApplication::processEvents();
+    if (index > 0 && index <= size)
     {
-        QList<Vote *> votes = count->get_candidates().at(index)->get_total_votes();
-        for (int j = votes.size()-1; j >= 0; j--)
+        votes = count->get_candidates().at(index-1)->get_total_votes();
+        votes_size = votes.size();
+        Vote *v;
+        VoteListItem *item;
+        for (int j = votes_size-1; j >= 0; j--)
         {
-            //dialog->setValue(j);
-            Vote *v = votes[j];
-            VoteListItem *item = new VoteListItem(v);
+            v = votes[j];
+            item = new VoteListItem(v);
             item->setText(QString::number(v->get_id()));
             ui->votes_list->addItem(item);
+            //QCoreApplication::processEvents();
         }
     }
-    else if (index == count->get_candidates().size())
+    else if (index == size+1)
         display_non_transferable_votes();
     else
-    {}
-    //dialog->setValue(100000);
+    {
+        ui->votes_list->clear();
+    }
+
 }
 
 void CountDialog::on_search_by_vote_id_rb_clicked()
@@ -281,7 +306,6 @@ void CountDialog::on_search_by_vote_id_rb_clicked()
     ui->search_by_vote_id_lbl->setVisible(true);
     ui->search_by_vote_id_spinbox->setVisible(true);
     ui->search_by_vote_id_btn->setVisible(true);
-    //ui->search_by_vote_id_rb->setChecked(false);
 }
 
 void CountDialog::on_search_by_cand_rb_clicked()
@@ -293,7 +317,6 @@ void CountDialog::on_search_by_cand_rb_clicked()
 
     ui->search_by_cand_combo->setVisible(true);
     ui->search_by_cand_lbl->setVisible(true);
-    //ui->search_by_cand_rb->setChecked(false);
 }
 
 void CountDialog::on_search_by_vote_id_btn_clicked()
@@ -304,23 +327,29 @@ void CountDialog::on_search_by_vote_id_btn_clicked()
     {
         int id = id_string.toInt();
         int size = count->get_candidates().size();
+        QList<Vote *> votes;
+        int votes_size = 0;
         for (int y = 0; y < size; y++)
         {
-            QList<Vote *> votes = count->get_candidates().at(y)->get_total_votes();
-            for (int j = votes.size()-1; j >= 0; j--)
+            votes = count->get_candidates().at(y)->get_total_votes();
+            votes_size = votes.size();
+            Vote *v;
+            VoteListItem *item;
+            for (int j = votes_size-1; j >= 0; j--)
             {
-                //dialog->setValue(j);
-                Vote *v = votes[j];
+                v = votes[j];
                 if (v->get_id() == id)
                 {
                     vote_found = true;
                     ui->votes_list->clear();
-                    VoteListItem *item = new VoteListItem(v);
+                    item = new VoteListItem(v);
                     item->setText(QString::number(v->get_id()));
                     ui->votes_list->addItem(item);
                 }
             }
+            //QCoreApplication::processEvents();
         }
+
         QList<Vote *> nonTs = count->get_nonTransferable_votes_not_effective();
         int nonTs_size = nonTs.size();
         for (int i = 0; i < nonTs_size; i++)
@@ -349,6 +378,26 @@ void CountDialog::on_search_by_vote_id_btn_clicked()
 
 }
 
+void CountDialog::results_form_static_info(int total, int valid, int invalid, int quota, int seats)
+{
+    rf->set_static_info(total, valid, invalid, quota, seats);
+}
+
+void CountDialog::results_form_set_votes_changes()
+{
+    rf->set_changes(changes);
+}
+
+void CountDialog::results_form_set_form()
+{
+    rf->set_up_form(count);
+}
+
+void CountDialog::add_to_results_form()
+{
+
+}
+
 void CountDialog::enable_final_results_button()
 {
     ui->final_results_btn->setEnabled(true);
@@ -356,6 +405,11 @@ void CountDialog::enable_final_results_button()
 
 void CountDialog::on_final_results_btn_clicked()
 {
-    ResultsForm *rf = new ResultsForm();
+    QStringList list = rf->get_list();
+    rf->showMaximized();
+}
 
+void CountDialog::on_continue_btn_clicked()
+{
+    //ui->progressBar->show();
 }

@@ -1,6 +1,7 @@
 #ifndef VALIDATE_H
 #define VALIDATE_H
 
+#include <QStringList>
 #include <QMainWindow>
 
 class Validate
@@ -9,7 +10,6 @@ public:
     Validate();
     QStringList remove_invalids(QStringList votes, QStringList names);
     QStringList get_invalids();
-    //bool Valids(QStringList line);
 
 private:
     QStringList invalids;

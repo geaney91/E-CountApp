@@ -1,7 +1,7 @@
 #ifndef FILEWORK_H
 #define FILEWORK_H
 
-#include <QMainWindow>
+#include <QWidget>
 
 class FileWork
 {

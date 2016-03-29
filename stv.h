@@ -1,17 +1,10 @@
 #ifndef STV_H
 #define STV_H
 
-#include <QMainWindow>
 #include "candidate.h"
 #include "vote.h"
-#include "validate.h"
 #include "countdialog.h"
 #include "filework.h"
-#include <QSplashScreen>
-#include <QThread>
-#include <QProgressDialog>
-#include <QMessageBox>
-//#include <QObject>
 
 class STV : public QObject
 {
@@ -19,10 +12,9 @@ class STV : public QObject
 
 public:
     STV();
-    STV(FileWork *f, int checked);
     void add_info(FileWork *f, int checked);
 
-    void start(/*QProgressDialog *pd*/);
+    void start();
     void validate_votes();
     void create_candidates();
     void create_valid_votes();
@@ -34,50 +26,54 @@ public:
     void check_for_elected();
     bool check_if_should_continue();
 
-    int check_if_meets_criteria(const int &count, QVector<int> &next_preferences);
-    int more_than_one_surplus(QList<Candidate *> candidates_with_surpluses, Candidate *c, QVector<int> &next_preferences);
+    int check_if_meets_criteria(int count, QVector<int> &next_preferences);
+    int more_than_one_surplus(QList<Candidate *> &candidates_with_surpluses, QVector<int> &next_preferences);
+    int check_all_surpluses(const QList<Candidate *> &candidates_with_surpluses, Candidate *c);
     int equal_surpluses(QList<Candidate *> &candidates_with_surpluses);
+    int equal_surpluses_first_check(QList<Candidate *> &candidates_with_surpluses, QList<int> &list);
+    int equal_surpluses_second_check(QList<Candidate *> &candidates_with_surpluses, QList<int> &list);
+    int equal_surpluses_third_check(QList<Candidate *> &candidates_with_surpluses, QList<int> &list);
+
     int check_criteria(Candidate *c, QVector<int> &next_preferences);
     bool elects_highest_continuing_candidate(const QVector<int> &next_preferences);
     bool brings_lowest_candidate_up(const QVector<int> &next_preferences);
     bool qualifies_for_expenses_recoupment(const QVector<int> &next_preferences);
 
+    void check_surplus_type(int surplus, QList<Vote *> electeds_votes, QVector<int> &next_preferences);
+    void transferables_greater_than_surplus(int surplus, const QList<Vote *> &votes, QVector<int> &next_preferences);
+    void transferables_equal_to_or_less_than_surplus(const QList<Vote *> &votes, QVector<int> &next_preferences);
+
     void surplus_distribution(Candidate *c, const QVector<int> &next_preferences);
-    void check_surplus_type(const int &surplus, QList<Vote *> electeds_votes, QVector<int> &next_preferences);
-    void transferables_greater_than_surplus(const int &surplus, QList<Vote *> votes, QVector<int> &next_preferences);
-    void sorting_out_fractions(QVector<float> &amounts_with_ratio, const QVector<int> &a, const int &total, const int &surplus);
-    void total_greater_than_surplus(const QList<int> &equal_fractions, int lowest, QVector<float> &amounts_with_ratio, const QVector<int> &a);
-    void total_less_than_surplus(const QList<int> &indices, int highest, QVector<float> &amounts_with_ratio, const QVector<int> &a);
-    void sorting_equal_fractions(int type, int &t, const QList<int> &equal_fractions,  const QVector<int> &a);
-    void more_than_2_fractions();
-    void transferables_equal_to_or_less_than_surplus(QList<Vote *> votes, QVector<int> &next_preferences);
+
+    void sorting_fractions(QVector<float> &amounts_with_ratio, const QVector<int> &a, int diff);
+    void sorting_equal_fractions(QList<int> &final_indices, QVector<float> &amounts_with_ratio, QVector<float> &temp, int k, int diff, const QVector<int> &a);
+    void equal_fractions_checks(QList<int> &final_indices, QVector<float> &temp, int num_needed, QList<int> &indices_of_equals, const QVector<int> &a);
+    void fractions_second_check(QList<int> &final_indices, QVector<float> &temp, int num_needed, QList<int> &indices_after_first_check, const QVector<int> &a);
+    void fractions_third_check(int k, int count_num, QList<int> &final_indices, QVector<float> &temp, int num_needed, QList<int> &indices_of_equals, const QVector<int> &a);
 
     bool separating_transferable_nonTransferable(int j, Vote *v, bool q);
-    QList<QList<Vote *> > finding_next_valid_preference(int j, QList<Vote *> votes);
-    int distributing_by_next_valid_preference(int j, Vote *v, const int &distribution_type);
+    QList<QList<Vote *> > finding_next_valid_preference(const QList<Vote *> &votes);
 
     void defining_candidates_for_exclusion();
+
     void equal_lowest_candidates(const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions);
-    bool should_candidate_be_excluded();
+    bool equal_lowest_first_check(bool check, const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions, QList<Candidate *> &list);
+    bool equal_lowest_second_check(bool check, const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions, QList<Candidate *> &list);
+
     void excluding_candidates(QList<Candidate *> exclusions);
-    void distribute_excluded_votes(const int &j, QVector<QList<Vote *> > &lists);
+    void distribute_excluded_votes(int j, QVector<QList<Vote *> > &lists);
 
     int get_current_surplus_total();
-    int get_total_candidate_votes(int i);
-    void clear_candidates_votes();
-
-    void count_complete();
 
     int drawing_lots(QList<int> list);
     Candidate *drawing_lots(QList<Candidate *> list);
-    QStringList get_valids();
-    QList<Vote *> get_votes();
+
+    void count_complete();
 
 private:
-    //MainWindow mw;
+
     CountDialog *countDialog;
     FileWork *fileWork;
-    QProgressDialog *dialog;
 
     QList<Candidate *> candidates;
     QList<Vote *> validVotes;
@@ -85,13 +81,15 @@ private:
     QList<Vote *> transferableVotes;
     QList<Candidate *> elected;
     QList<Candidate *> eliminated;
-    QList<Candidate *> active;
     QList<Count *> counts;
 
     int seats;
     int quota;
     int expenses_recoupment_point;
     int countNumber;
+    int candidates_size;
+    int checked;
+
     QStringList votes;
     QStringList valids;
     QStringList invalids;
@@ -100,13 +98,8 @@ private:
 
     QString distributionInfo;
     QString textForLogFile;
-    int size;
-    int checked;
-    QMessageBox mb;
 
 signals:
-    //void start(/*QProgressDialog *pd*/);
-    //void display_count_info();
 
 public slots:
     void continue_count();

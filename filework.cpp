@@ -53,7 +53,7 @@ void FileWork::Read()
     }
     QTextStream in(&file);
 
-    while(!in.atEnd())
+    while(num < 4)
     {
         if (num == 0)
         {
@@ -75,9 +75,13 @@ void FileWork::Read()
         }
         else
         {
-            line = in.readLine();
-            votes.append(line);
-            count++;
+            while(!in.atEnd())
+            {
+                line = in.readLine();
+                votes.append(line);
+                count++;
+            }
+            num++;
         }
     }
     file.close();

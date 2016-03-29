@@ -1,8 +1,6 @@
 #ifndef TRACKVOTE_H
 #define TRACKVOTE_H
 
-#include <QMainWindow>
-#include "vote.h"
 #include "candidate.h"
 
 class TrackVote

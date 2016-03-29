@@ -1,4 +1,5 @@
 #include "validate.h"
+#include <QCoreApplication>
 
 Validate::Validate()
 {
@@ -41,6 +42,7 @@ QStringList Validate::remove_invalids(QStringList votes, QStringList names)
             invalids.append(l);
             //add_invalids(votes, l, i);
         }
+        //QCoreApplication::processEvents();
     }
 
     return votes;

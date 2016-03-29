@@ -8,7 +8,7 @@ Count::Count()
 }
 
 Count::Count(QList<Candidate *> c, QList<Candidate *> elec, QList<Candidate *> excl, QList<Vote *> v,
-             QList<Vote *> ntv, int countNum, QString distribInfo)
+             QList<Vote *> ntv, int countNum, QString distribInfo, int s)
 {
     candidates = c;
     elected = elec;
@@ -17,6 +17,12 @@ Count::Count(QList<Candidate *> c, QList<Candidate *> elec, QList<Candidate *> e
     nonTransferableVotesNotEffective = ntv;
     countNumber = countNum;
     distributionInfo = distribInfo;
+    seats = s;
+}
+
+int Count::get_seats()
+{
+    return seats;
 }
 
 QList<Candidate *> Count::get_candidates()

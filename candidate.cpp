@@ -1,5 +1,4 @@
 #include "candidate.h"
-#include <QMainWindow>
 
 Candidate::Candidate()
 {
@@ -14,14 +13,11 @@ Candidate::Candidate(int id, QString n, QString p)
     surplus = 0;
     status = 0;
     surplusBeingDistributed = false;
-    //votesPerCount.append(votes);
-    //votesPerCount.append(new QList<Vote *>);
 }
 
-void Candidate::increment_votes(int countNum, /*int countNum, */Vote *v)
+void Candidate::increment_votes(int countNum, Vote *v)
 {
     votesPerCount[countNum].append(v);
-    //votes.append(v);
 }
 
 void Candidate::set_votes(QList<Vote *> votes)
@@ -65,11 +61,6 @@ QList<Vote *> Candidate::get_total_votes()
     }
     return votes;
 }
-
-/*QList<Vote *> Candidate::getVotes()
-{
-    return votes;
-}*/
 
 int Candidate::get_id()
 {
