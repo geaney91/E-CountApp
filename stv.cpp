@@ -21,6 +21,7 @@ void STV::add_info(FileWork *f, int checked)
     votes = f->get_Votes();
     names = f->get_Candidate_Names();
     parties = f->get_Candidate_Parties();
+    QCoreApplication::processEvents();
 
     countDialog = new CountDialog();
 
@@ -36,8 +37,8 @@ void STV::start()
     candidates_size = candidates.size();
     //QCoreApplication::processEvents();
     create_valid_votes();
-    QCoreApplication::processEvents();
     calculate_quota();
+    QCoreApplication::processEvents();
     start_count();
 }
 
@@ -99,11 +100,11 @@ void STV::start_count()
     textForLogFile = "";
     countNumber = 1;
     distribute_first_preferences();
-    //QCoreApplication::processEvents();
+    QCoreApplication::processEvents();
     check_for_elected();
-    //QCoreApplication::processEvents();
+    QCoreApplication::processEvents();
     display_count_info();
-    //QCoreApplication::processEvents();
+    QCoreApplication::processEvents();
     if (checked == 1)
         continue_count();
     //else
