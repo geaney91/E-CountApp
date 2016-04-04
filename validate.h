@@ -8,17 +8,13 @@ class Validate
 {
 public:
     Validate();
-    QStringList remove_invalids(QStringList votes, QStringList names);
+    QStringList remove_invalids(QStringList votes);
     QStringList get_invalids();
 
 private:
     QStringList invalids;
 
     bool first_check(QString l);
-    bool second_check(QString l);
-    bool third_check(QString l, int count);
-    bool fourth_check(QString l);
-    void add_invalids(QStringList votes, QString l, int i);
 
 signals:
 

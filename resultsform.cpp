@@ -47,6 +47,7 @@ QStringList ResultsForm::get_list()
     return headers;
 }
 
+
 void ResultsForm::set_up_form(Count *c)
 {
     keep_count++;
@@ -60,11 +61,11 @@ void ResultsForm::set_up_form(Count *c)
             headers<<"Candidate";
             ui->results_table->setHorizontalHeaderLabels(headers);
             ui->results_table->setItem(0, 0, new QTableWidgetItem(""));
+            //Puts candidates' names in the form
             for (int i = 1; i <= c->get_candidates().size(); i++)
             {
                 ui->results_table->setItem(i, 0, new QTableWidgetItem(c->get_candidates().at(i-1)->get_Name()));
                 changes.append("");
-                //QCoreApplication::processEvents();
             }
             ui->results_table->setItem(c->get_candidates().size()+2, 0, new QTableWidgetItem("Non-Transferable Not Effective"));
         }
@@ -80,6 +81,7 @@ void ResultsForm::add_info_to_form()
     int column = count->get_countNumber();
     ui->results_table->insertColumn(column);
     ui->results_table->setRowHeight(0, 100);
+    //Puts total votes and changes for each candidate at each count into form
     for (int j = 0; j < count->get_candidates().size(); j++)
     {
         Candidate *cand = count->get_candidates().at(j);
@@ -87,17 +89,17 @@ void ResultsForm::add_info_to_form()
                                    new QTableWidgetItem(QString::number(cand->get_total_votes().size()) +
                                                         "\n" + changes[j]));
         row++;
-        //QCoreApplication::processEvents();
     }
+    //Puts non-transferable not effectives into form
     ui->results_table->setItem(row+1, column,
                                new QTableWidgetItem(QString::number(count->get_nonTransferable_votes_not_effective().size())));
 
     ui->results_table->setItem(0, column, new QTableWidgetItem(count->get_distribution_info()));
+    //Makes the chosen cell a text edit so that i can put 2 lines of text one on top of another.
     QTextEdit *edit = new QTextEdit();
     edit->setReadOnly(true);
     edit->setText(count->get_distribution_info());
     ui->results_table->setCellWidget(0, column, edit);
-    //ui->results_table->setItem(0, column, new QTableWidgetItem(count->get_distribution_info()));
     update_headers();
     if (headers.contains("4"))
         check = true;

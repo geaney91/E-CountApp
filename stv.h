@@ -58,7 +58,7 @@ public:
 
     void equal_lowest_candidates(QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions);
     bool equal_lowest_first_check(bool check, const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions, QList<Candidate *> &list);
-    bool equal_lowest_second_check(bool check, const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions, QList<Candidate *> &list);
+    bool equal_lowest_second_check(bool check, QList<Candidate *> &exclusions, QList<Candidate *> &list);
 
     void excluding_candidates(QList<Candidate *> exclusions);
     void distribute_excluded_votes(int j, QVector<QList<Vote *> > &lists);
