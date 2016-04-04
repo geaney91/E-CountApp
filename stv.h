@@ -56,7 +56,7 @@ public:
 
     void defining_candidates_for_exclusion();
 
-    void equal_lowest_candidates(const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions);
+    void equal_lowest_candidates(QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions);
     bool equal_lowest_first_check(bool check, const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions, QList<Candidate *> &list);
     bool equal_lowest_second_check(bool check, const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions, QList<Candidate *> &list);
 

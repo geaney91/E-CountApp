@@ -8,6 +8,8 @@ ResultsForm::ResultsForm(QWidget *parent) :
 {
     ui->setupUi(this);
     keep_count = 0;
+    ui->results_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    this->setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint);
 }
 
 ResultsForm::~ResultsForm()

@@ -47,7 +47,7 @@ void STV::validate_votes()
 {
     Validate *v = new Validate();
     valids = v->remove_invalids(votes, names);
-    std::random_shuffle(valids.begin(), valids.end());
+    //std::random_shuffle(valids.begin(), valids.end());
     invalids = v->get_invalids();
 }
 
@@ -86,6 +86,7 @@ void STV::create_valid_votes()
         validVotes.append(new Vote(i+1, "", preferences));
         //QCoreApplication::processEvents();
     }
+    std::random_shuffle(validVotes.begin(), validVotes.end());
 }
 
 void STV::calculate_quota()
@@ -117,6 +118,7 @@ void STV::distribute_first_preferences()
     QVector<QList<Vote *>> lists (candidates_size);
     int size = validVotes.size();
     Vote *v;
+    bool check = false;
     QList<int> l;
     textForLogFile += "Count " + QString::number(1) + "\n";
 
@@ -124,6 +126,8 @@ void STV::distribute_first_preferences()
     for (int i = 0; i < size; i++)
     {
         v = validVotes[i];
+        if (v->get_id() == 508)
+            check = true;
         l = v->get_preferences();
         for (int j = 0; j < candidates_size; j++)
         {
@@ -463,7 +467,7 @@ int STV::more_than_one_surplus(QList<Candidate *> &candidates_with_surpluses, QV
         done = false;
         v = electeds_votes[i];
         transfer_to = v->get_transferable_to();
-        next_pref = (v->get_preferences().at(transfer_to-1))+1;
+        next_pref = (v->get_preferences().at(transfer_to-1));
         separating_transferable_nonTransferable(next_pref, v, done);
     }
 
@@ -508,7 +512,7 @@ int STV::check_all_surpluses(const QList<Candidate *> &candidates_with_surpluses
         done = false;
         v = electeds_votes[i];
         transfer_to = v->get_transferable_to();
-        next_pref = (v->get_preferences().at(transfer_to-1))+1;
+        next_pref = (v->get_preferences().at(transfer_to-1));
         separating_transferable_nonTransferable(next_pref, v, done);
     }
 
@@ -1309,8 +1313,13 @@ void STV::defining_candidates_for_exclusion()
     excluding_candidates(exclusions);
 }
 
-void STV::equal_lowest_candidates(const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions)
+void STV::equal_lowest_candidates(QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions)
 {
+    for (int i = 1; i < num_of_votes.size(); i++)
+    {
+        if (num_of_votes[i]->get_total_votes().size() != num_of_votes[0]->get_total_votes().size())
+            num_of_votes.removeAt(i);
+    }
     QList<Candidate *> list;
     bool check = false;
 
@@ -1329,7 +1338,7 @@ bool STV::equal_lowest_first_check(bool check, const QList<Candidate *> &num_of_
     int i = 1;
 
     lowest_original_votes.append(num_of_votes[0]);
-    while (num_of_votes[i]->get_total_votes().size() == num_of_votes[0]->get_total_votes().size())
+    while (num_of_votes.size() > i && num_of_votes[i]->get_total_votes().size() == num_of_votes[0]->get_total_votes().size())
     {
         if (num_of_votes[i]->get_votes_for_particular_count(0).size() < lowest_original_votes[0]->get_votes_for_particular_count(0).size())
         {
@@ -1467,7 +1476,7 @@ void STV::distribute_excluded_votes(int j, QVector<QList<Vote *>> &lists)
         done = false;
         v = candidates[j]->get_total_votes().at(i);
         transfer_to = v->get_transferable_to();
-        next_pref = (v->get_preferences().at(transfer_to-1))+1;
+        next_pref = (v->get_preferences().at(transfer_to-1));
         separating_transferable_nonTransferable(next_pref, v, done);
     }
 

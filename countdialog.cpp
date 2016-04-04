@@ -11,6 +11,7 @@ CountDialog::CountDialog(QWidget *parent) :
     ui(new Ui::CountDialog)
 {
     ui->setupUi(this);
+    this->setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
     ui->progressBar->hide();
     rf = new ResultsForm();
     //if (checked == 0)
@@ -406,7 +407,8 @@ void CountDialog::enable_final_results_button()
 void CountDialog::on_final_results_btn_clicked()
 {
     QStringList list = rf->get_list();
-    rf->showMaximized();
+    rf->setGeometry(400, 200, 1000, 700);
+    rf->show();
 }
 
 void CountDialog::on_continue_btn_clicked()

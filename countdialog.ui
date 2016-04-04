@@ -14,10 +14,7 @@
    <string>E-Count</string>
   </property>
   <property name="autoFillBackground">
-   <bool>false</bool>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">background-color: rgb(218, 216, 216);</string>
+   <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
@@ -214,6 +211,12 @@
            <height>20</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
          <property name="text">
           <string>Elected</string>
          </property>
@@ -246,6 +249,8 @@
         <widget class="QLabel" name="trace_vote_lbl">
          <property name="font">
           <font>
+           <weight>75</weight>
+           <bold>true</bold>
            <underline>true</underline>
           </font>
          </property>
@@ -402,6 +407,9 @@
       <widget class="QLabel" name="vote_route_lbl">
        <property name="font">
         <font>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
          <underline>true</underline>
         </font>
        </property>
@@ -452,6 +460,12 @@
            <height>0</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
          <property name="text">
           <string>Candidates</string>
          </property>
@@ -474,6 +488,12 @@
      </item>
      <item row="2" column="1">
       <widget class="QLabel" name="votesNotEffectiveLbl1">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="text">
         <string>Non-Transferable Votes Not Effective:</string>
        </property>
@@ -570,9 +590,15 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>220</width>
+             <width>210</width>
              <height>0</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
            </property>
            <property name="text">
             <string>Votes</string>
@@ -595,6 +621,12 @@
              <width>40</width>
              <height>0</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
            </property>
            <property name="text">
             <string>Vote Changes</string>
@@ -650,6 +682,12 @@
            <width>0</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="text">
           <string>Excluded</string>
