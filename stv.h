@@ -27,12 +27,12 @@ public:
     bool check_if_should_continue();
 
     int check_if_meets_criteria(int count, QVector<int> &next_preferences);
-    int more_than_one_surplus(QList<Candidate *> &candidates_with_surpluses, QVector<int> &next_preferences);
-    int check_all_surpluses(const QList<Candidate *> &candidates_with_surpluses, Candidate *c);
-    int equal_surpluses(QList<Candidate *> &candidates_with_surpluses);
-    int equal_surpluses_first_check(QList<Candidate *> &candidates_with_surpluses, QList<int> &list);
-    int equal_surpluses_second_check(QList<Candidate *> &candidates_with_surpluses, QList<int> &list);
-    int equal_surpluses_third_check(QList<Candidate *> &candidates_with_surpluses, QList<int> &list);
+    int more_than_one_surplus(QVector<int> &next_preferences);
+    int check_all_surpluses(Candidate *c);
+    int equal_surpluses();
+    int equal_surpluses_first_check(QList<int> &list);
+    int equal_surpluses_second_check(QList<int> &list);
+    int equal_surpluses_third_check(QList<int> &list);
 
     int check_criteria(Candidate *c, QVector<int> &next_preferences);
     bool elects_highest_continuing_candidate(const QVector<int> &next_preferences);
@@ -46,21 +46,21 @@ public:
     void surplus_distribution(Candidate *c, const QVector<int> &next_preferences);
 
     void sorting_fractions(QVector<float> &amounts_with_ratio, const QVector<int> &a, int diff);
-    void sorting_equal_fractions(QList<int> &final_indices, QVector<float> &amounts_with_ratio, QVector<float> &temp, int k, int diff, const QVector<int> &a);
-    void equal_fractions_checks(QList<int> &final_indices, QVector<float> &temp, int num_needed, QList<int> &indices_of_equals, const QVector<int> &a);
-    void fractions_second_check(QList<int> &final_indices, QVector<float> &temp, int num_needed, QList<int> &indices_after_first_check, const QVector<int> &a);
-    void fractions_third_check(int k, int count_num, QList<int> &final_indices, QVector<float> &temp, int num_needed, QList<int> &indices_of_equals, const QVector<int> &a);
+    void sorting_equal_fractions(QVector<float> &amounts_with_ratio, QVector<float> &temp, int k, int diff, const QVector<int> &a);
+    void equal_fractions_checks(QVector<float> &temp, int num_needed, QList<int> &indices_of_equals, const QVector<int> &a);
+    void fractions_second_check(QVector<float> &temp, int num_needed, QList<int> &indices_after_first_check, const QVector<int> &a);
+    void fractions_third_check(int k, int count_num, QVector<float> &temp, int num_needed, QList<int> &indices_of_equals, const QVector<int> &a);
 
     bool separating_transferable_nonTransferable(int j, Vote *v, bool q);
     QList<QList<Vote *> > finding_next_valid_preference(const QList<Vote *> &votes);
 
     void defining_candidates_for_exclusion();
 
-    void equal_lowest_candidates(QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions);
-    bool equal_lowest_first_check(bool check, const QList<Candidate *> &num_of_votes, QList<Candidate *> &exclusions, QList<Candidate *> &list);
-    bool equal_lowest_second_check(bool check, QList<Candidate *> &exclusions, QList<Candidate *> &list);
+    void equal_lowest_candidates(QList<Candidate *> &num_of_votes);
+    bool equal_lowest_first_check(bool check, const QList<Candidate *> &num_of_votes, QList<Candidate *> &list);
+    bool equal_lowest_second_check(bool check, QList<Candidate *> &list);
 
-    void excluding_candidates(QList<Candidate *> exclusions);
+    void excluding_candidates();
     void distribute_excluded_votes(int j, QVector<QList<Vote *> > &lists);
 
     int get_current_surplus_total();
@@ -82,6 +82,10 @@ private:
     QList<Candidate *> elected;
     QList<Candidate *> eliminated;
     QList<Count *> counts;
+
+    QList<Candidate *> exclusions;
+    QList<int> final_indices;
+    QList<Candidate *> candidates_with_surpluses;
 
     int seats;
     int quota;

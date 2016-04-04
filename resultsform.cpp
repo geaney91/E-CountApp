@@ -29,18 +29,8 @@ void ResultsForm::set_static_info(int total, int valid, int invalid, int quota, 
     ui->invalid_ballots_lbl2->setText(QString::number(invalid));
     ui->quota_lbl2->setText(QString::number(quota));
     ui->no_of_seats_lbl2->setText(QString::number(seats));
-    //set_table_rows();
 }
 
-/*void ResultsForm::set_table_rows()
-{
-    Count *c = counts.at(0);
-    ui->results_table->insertColumn(0);
-    for (int i = 0; i < c->get_candidates().size(); i++)
-    {
-        ui->results_table->insertRow(i);
-    }
-}*/
 
 QStringList ResultsForm::get_list()
 {
@@ -114,7 +104,6 @@ void ResultsForm::update_headers()
 void ResultsForm::set_changes(QStringList changes)
 {
     this->changes = changes;
-    //ui->results_table->it
 }
 
 void ResultsForm::set_elected()
